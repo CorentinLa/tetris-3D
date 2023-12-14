@@ -1,7 +1,6 @@
 #include "board.hpp"
 
-
-int constructPiece(Piece piece) {
+int Board::constructPiece(Piece piece) {
     int x = piece.getX();
     int y = piece.getY();
     int z = piece.getZ();
@@ -13,7 +12,7 @@ int constructPiece(Piece piece) {
     for(int i=0; i<shape.size(); i++) {
         for(int j=0; j<shape[i].size(); j++) {
             for(int k=0; k<shape[i][j].size(); k++) {
-                if(shape[i][j][k] == 1 && board[x+i][y+j][z+k-1] == 2) {
+                if(shape[i][j][k] == 1 && boardMat[x+i][y+j][z+k-1] == 2) {
                     putPiece = 1;
                     break;
                 }
@@ -27,7 +26,7 @@ int constructPiece(Piece piece) {
             for(int j=0; j<shape[i].size(); j++) {
                 for(int k=0; k<shape[i][j].size(); k++) {
                     if(shape[i][j][k] == 1) {
-                        board[x+i][y+j][z+k] = 2;
+                        boardMat[x+i][y+j][z+k] = 2;
                     }
                 }
             }
@@ -41,7 +40,7 @@ int constructPiece(Piece piece) {
             for(int j=0; j<shape[i].size(); j++) {
                 for(int k=0; k<shape[i][j].size(); k++) {
                     if(shape[i][j][k] == 1) {
-                        board[x+i][y+j][z+k] = 1;
+                        boardMat[x+i][y+j][z+k] = 1;
                     }
                 }
             }

@@ -1,7 +1,7 @@
 #include "piece.hpp"
 
 
-void setRotation(char axe, int angle) // angle in degrees
+void Piece::setRotation(char axe, int angle) // angle in degrees
 {
     if(angle % 90 != 0)
     {
