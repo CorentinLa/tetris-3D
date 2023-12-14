@@ -8,9 +8,11 @@
 #include <GL/glu.h>
 #include <GL/glut.h>
 #include <SOIL/SOIL.h>
+#include <stdexcept>
+
 //#include "Shape.h"
 
-//compiler avec: g++ display-game.cpp -o tetris3d.exe -lGL -lGLU -lglut
+//compiler avec: g++ display-game.cpp -o tetris3d.exe -lGL -lGLU -lglut -lSOIL
 //sudo apt-get install libsoil-dev
 //sudo apt-get install freeglut3-dev
 
@@ -51,7 +53,7 @@ bool gameOver = false;
 
 bool stop = true;
 int base[base_size][base_size][base_size];
-
+ 
 void *font = GLUT_BITMAP_HELVETICA_18;
 
 void destroyer() {}
@@ -87,23 +89,97 @@ void printTxt(float x, float y, char *String) {
 
 }
 
-void display() {
+void drawCube(float x, float y, float z, float size, GLuint textureID) {
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+
+    glBegin(GL_QUADS);
+
+    // Front face
+    glTexCoord2f(0, 0); glVertex3f(x - size / 2, y - size / 2, z + size / 2);
+    glTexCoord2f(1, 0); glVertex3f(x + size / 2, y - size / 2, z + size / 2);
+    glTexCoord2f(1, 1); glVertex3f(x + size / 2, y + size / 2, z + size / 2);
+    glTexCoord2f(0, 1); glVertex3f(x - size / 2, y + size / 2, z + size / 2);
+
+    // Back face
+    glTexCoord2f(1, 0); glVertex3f(x - size / 2, y - size / 2, z - size / 2);
+    glTexCoord2f(0, 0); glVertex3f(x + size / 2, y - size / 2, z - size / 2);
+    glTexCoord2f(0, 1); glVertex3f(x + size / 2, y + size / 2, z - size / 2);
+    glTexCoord2f(1, 1); glVertex3f(x - size / 2, y + size / 2, z - size / 2);
+
+    // Left face
+    glTexCoord2f(0, 0); glVertex3f(x - size / 2, y - size / 2, z + size / 2);
+    glTexCoord2f(1, 0); glVertex3f(x - size / 2, y - size / 2, z - size / 2);
+    glTexCoord2f(1, 1); glVertex3f(x - size / 2, y + size / 2, z - size / 2);
+    glTexCoord2f(0, 1); glVertex3f(x - size / 2, y + size / 2, z + size / 2);
+
+    // Right face
+    glTexCoord2f(1, 0); glVertex3f(x + size / 2, y - size / 2, z + size / 2);
+    glTexCoord2f(0, 0); glVertex3f(x + size / 2, y - size / 2, z - size / 2);
+    glTexCoord2f(0, 1); glVertex3f(x + size / 2, y + size / 2, z - size / 2);
+    glTexCoord2f(1, 1); glVertex3f(x + size / 2, y + size / 2, z + size / 2);
+
+    // Top face
+    glTexCoord2f(0, 1); glVertex3f(x - size / 2, y + size / 2, z + size / 2);
+    glTexCoord2f(1, 1); glVertex3f(x + size / 2, y + size / 2, z + size / 2);
+    glTexCoord2f(1, 0); glVertex3f(x + size / 2, y + size / 2, z - size / 2);
+    glTexCoord2f(0, 0); glVertex3f(x - size / 2, y + size / 2, z - size / 2);
+
+    // Bottom face
+    glTexCoord2f(0, 1); glVertex3f(x - size / 2, y - size / 2, z + size / 2);
+    glTexCoord2f(1, 1); glVertex3f(x + size / 2, y - size / 2, z + size / 2);
+    glTexCoord2f(1, 0); glVertex3f(x + size / 2, y - size / 2, z - size / 2);
+    glTexCoord2f(0, 0); glVertex3f(x - size / 2, y - size / 2, z - size / 2);
+
+    glEnd();
+
+    glDisable(GL_TEXTURE_2D);
+}
+
+void drawFloor(GLuint textureID) {
+	glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+
+    const float tileSize = 1;
+
+    glBegin(GL_QUADS);
+    for (int i = -base_size; i < base_size; ++i) {
+        for (int j = -base_size; j < base_size; ++j) {
+            float x = i * tileSize;
+            float z = j * tileSize;
+
+            // Draw each quad with texture coordinates
+            glTexCoord2f(0.0f, 0.0f); glVertex3f(x, -base_size/2-1, z);
+            glTexCoord2f(1.0f, 0.0f); glVertex3f(x + tileSize, -base_size/2-1, z);
+            glTexCoord2f(1.0f, 1.0f); glVertex3f(x + tileSize, -base_size/2-1, z + tileSize);
+            glTexCoord2f(0.0f, 1.0f); glVertex3f(x, -base_size/2-1, z + tileSize);
+        }
+    }
+    glEnd();
+
+    glDisable(GL_TEXTURE_2D);
+}
+
+void drawBackground(GLuint textureID) {
+	glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+
+    glBegin(GL_QUADS);
+
+	int background_size = 8;
+
+    glTexCoord2f(0.0f, 0.0f); glVertex3f(-base_size/2-1, -background_size, background_size);
+    glTexCoord2f(1.0f, 0.0f); glVertex3f(-base_size/2-1, -background_size, -background_size);
+    glTexCoord2f(1.0f, 1.0f); glVertex3f(-base_size/2-1, background_size, -background_size);
+    glTexCoord2f(0.0f, 1.0f); glVertex3f(-base_size/2-1, background_size, background_size);
+    glEnd();
+
+    glDisable(GL_TEXTURE_2D);
+}
+
+void drawGrid() {
+
 	float i;
-	char scr[20];
-	char scre[20];
-
-	strcpy(scr, "SCORE :");
-	sprintf(scre, "%d", score);
-	strcat(scr, scre);
-
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glMatrixMode(GL_MODELVIEW);
-
-	printTxt(1.0f, 1.0f, scr);
-
-	glLoadIdentity();
-	gluLookAt(zoom, 2, 0, 0, 0, 0, 0, 1, 0);
-
 
 	glPushMatrix();
 
@@ -113,6 +189,11 @@ void display() {
 	glRotatef(upDown_x, 1, 0, 0);
 	glRotatef(upDown_z, 0, 0, 1);
 
+	// glBindTexture(GL_TEXTURE_2D, textureID);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 	glColor3f(0.7, 0.6, 0.9);
 	for (i = -N / 2; i <= N / 2; i++)
@@ -164,6 +245,48 @@ void display() {
 		glVertex3f(-N / 2, -N / 2, i);
 		glEnd();
 	}
+}
+
+GLuint loadTexture(const char* filename) {
+    GLuint textureID = SOIL_load_OGL_texture(
+        filename,
+        SOIL_LOAD_AUTO,
+        SOIL_CREATE_NEW_ID,
+        SOIL_FLAG_INVERT_Y
+    );
+
+    if (textureID == 0) {
+        throw std::runtime_error("Texture loading failed: " + std::string(SOIL_last_result()));
+    }
+
+    return textureID;
+}
+
+void display() {
+	char scr[20];
+	char scre[20];
+	
+	GLuint cobblestoneID = loadTexture("cobblestone.png");
+	GLuint floorID = loadTexture("floor.png");
+	GLuint fujisanID = loadTexture("fujisan.png");
+	
+	strcpy(scr, "SCORE :");
+	sprintf(scre, "%d", score);
+	strcat(scr, scre);
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glMatrixMode(GL_MODELVIEW);
+
+	printTxt(1.0f, 1.0f, scr);
+
+	glLoadIdentity();
+	gluLookAt(zoom, 2, 0, 0, 0, 0, 0, 1, 0);
+
+	drawGrid();
+
+	drawFloor(floorID);
+
+	drawBackground(fujisanID);
 
     for (int j = 0; j < base_size; j++)
 	{
@@ -175,14 +298,15 @@ void display() {
 				{
 					glPushMatrix();
 
-					glTranslatef(0, 0, 0);
-					glRotatef(0, 0, 1, 0);
-					glRotatef(0, 1, 0, 0);
-					glRotatef(0, 0, 0, 1);
+					// glTranslatef(0, 0, 0);
+					// glRotatef(0, 0, 1, 0);
+					// glRotatef(0, 1, 0, 0);
+					// glRotatef(0, 0, 0, 1);
 
-					glTranslatef(j, k, l);
+					// glTranslatef(j, k, l);
 
-                    glutSolidCube(1);
+                    // glutSolidCube(1);
+					drawCube(j, k, l, 1, cobblestoneID);
 
 					glPopMatrix();
 				}
@@ -192,24 +316,7 @@ void display() {
 
 	glPopMatrix();
 
-	// if (!gameOver)
-	// {
-	// 	shp.drawShape(d, movex, down, movez, leftRight_rotation, upDown_x, upDown_z);
-
-	// 	putInBase();
-	// }
-	// else
-	// {
-	// 	strcpy(scr, "G A M E  O V E R");
-	// 	printTxt(4.0f, 5.0f, scr);
-	// }
-
 	drawBase();
-
-	// if (!stop)
-	// {
-	// 	down -= down_speed;
-	// }
 
 	glutSwapBuffers();
 	glFlush();
@@ -487,29 +594,42 @@ void initialize()
 	glMatrixMode(GL_MODELVIEW);
 	glShadeModel(GL_SMOOTH);
 
+	glEnable(GL_LIGHT0);
+	glEnable(GL_COLOR_MATERIAL);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_LIGHTING);
+	glShadeModel(GL_SMOOTH);
+	
+	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+	glDepthFunc(GL_LEQUAL);
+
 	// specify the clear value for the depth buffer
 	glClearDepth(1.0f);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
+	glEnable(GL_TEXTURE_2D);
 
 	// specify implementation-specific hints
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
-	GLfloat amb_light[] = { 0.6, 0.6, 0.6, 1.0 };
-	GLfloat diffuse[] = { 0.5, 0.5, 0.5, 1 };
-	GLfloat specular[] = { 0.5, 0.5, 0.6, 1 };
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, amb_light);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
-	glEnable(GL_LIGHT0);
-	glEnable(GL_COLOR_MATERIAL);
-	glShadeModel(GL_SMOOTH);
-	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
-	glDepthFunc(GL_LEQUAL);
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-	glClearColor(0.0, 0.0, 0.0, 1.0);
+	// GLfloat amb_light[] = { 0.6, 0.6, 0.6, 1.0 };
+	// GLfloat diffuse[] = { 0.5, 0.5, 0.5, 1 };
+	// GLfloat specular[] = { 0.5, 0.5, 0.6, 1 };
+	// glLightModelfv(GL_LIGHT_MODEL_AMBIENT, amb_light);
+	// glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
+	// glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
+	
+	GLfloat material_ambient[] = { 0.7, 0.7, 0.7, 1.0 };  // Ambient material color (RGBA)
+	GLfloat material_diffuse[] = { 0.9, 0.9, 0.9, 1.0 };  // Diffuse material color (RGBA)
+	GLfloat material_specular[] = { 1.0, 1.0, 1.0, 1.0 }; // Specular material color (RGBA)
+	GLfloat shininess = 10.0;  // Shininess parameter
+	glMaterialfv(GL_FRONT, GL_AMBIENT, material_ambient);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, material_diffuse);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, material_specular);
+	glMaterialf(GL_FRONT, GL_SHININESS, shininess);
+
+	// glClearColor(0.0, 0.0, 0.0, 1.0);
+
 }
 
 int main(int argc, char** argv) {
