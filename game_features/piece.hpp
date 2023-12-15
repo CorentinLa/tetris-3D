@@ -1,6 +1,7 @@
 #ifndef PIECE_HPP
 #define PIECE_HPP
 
+#define PIECE_SIZE 3
 #include <vector>
 #include <iostream>
 
