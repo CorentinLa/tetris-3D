@@ -9,12 +9,17 @@
 #include <GL/glut.h>
 #include <SOIL/SOIL.h>
 #include <stdexcept>
+#include <new>
 
 //#include "Shape.h"
 
 //compiler avec: g++ display-game.cpp -o tetris3d.exe -lGL -lGLU -lglut -lSOIL
 //sudo apt-get install libsoil-dev
 //sudo apt-get install freeglut3-dev
+
+GLuint cobblestoneID;
+GLuint floorID;
+GLuint fujisanID;
 
 #define KEY_ESCAPE 27
 #define N 15.00
@@ -266,10 +271,11 @@ void display() {
 	char scr[20];
 	char scre[20];
 	
-	GLuint cobblestoneID = loadTexture("cobblestone.png");
-	GLuint floorID = loadTexture("floor.png");
-	GLuint fujisanID = loadTexture("fujisan.png");
-	
+	//#ifndef LOAD_TEXTURE
+	//#define LOAD_TEXTURE
+
+	//#endif
+
 	strcpy(scr, "SCORE :");
 	sprintf(scre, "%d", score);
 	strcat(scr, scre);
@@ -574,6 +580,10 @@ void keyboard(unsigned char key, int mousePositionX, int mousePositionY) {
 
 void initialize()
 {
+	cobblestoneID = loadTexture("cobblestone.png");
+	floorID = loadTexture("floor.png");
+	fujisanID = loadTexture("fujisan.png");
+
 	// select projection matrix
 	glMatrixMode(GL_PROJECTION);
 
@@ -673,6 +683,6 @@ int main(int argc, char** argv) {
 	initialize();
     
     glutMainLoop();// Initialize main loop
-
+	
 	return 0;
 }
