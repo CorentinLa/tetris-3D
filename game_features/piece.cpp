@@ -24,19 +24,3 @@ void Piece::setRotation(char axe, int angle) // angle in degrees
             break;
     }
 }
-
-void setShape(int[4][4][4] matrixShape) // Coordinates start from bottom left front corner of the cube for accessibility. The cube is 4x4x4.
-{
-    for(int x=0; x<4; x++)
-    {
-        for(int y=0; y<4; y++)
-        {
-            for(int z=0; z<4; z++)
-            {
-                // Shift the shape to the center of the cube
-                    
-
-            }
-        }
-    }   
-}

@@ -45,7 +45,7 @@ public:
     void setRotationY(int angle) { setRotation('y', angle); };
     void setRotationZ(int angle) { setRotation('z', angle); };
 
-    void setShape(int matrixShape[4][4][4]); 
+    void setShape(vector<Coordinates> newShape) { shape = newShape; };
     
     void setColor(float r, float g, float b) 
     {
@@ -71,7 +71,7 @@ public:
 
     vector<float> getColor() const { return color;};
 
-    vector<Coordinates> getShape() {return shape;};
+    vector<Coordinates> getShape() const {return shape;};
 
     void setRotation(char axe, int angle); // angle in degrees
 
