@@ -1,5 +1,9 @@
 #include <gtk/gtk.h>
 
+//sudo apt-get install libgtk-3-dev
+
+//compiler avec: gcc `pkg-config --cflags gtk+-3.0` -o display-menu.exe display-menu.cpp `pkg-config --libs gtk+-3.0`
+
 static void execute_tetris3d(GtkWidget *widget, gpointer data) {
     const char *command = "../3d/tetris3d.exe";
     GError *error = NULL;
