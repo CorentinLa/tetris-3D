@@ -11,11 +11,10 @@
 #include <stdexcept>
 #include <new>
 
-//#include "Shape.h"
-
-//compiler avec: g++ display-game.cpp -o tetris3d.exe -lGL -lGLU -lglut -lSOIL
 //sudo apt-get install libsoil-dev
 //sudo apt-get install freeglut3-dev
+
+//compiler avec: g++ display-game.cpp -o tetris3d.exe -lGL -lGLU -lglut -lSOIL
 
 GLuint cobblestoneID;
 GLuint floorID;
@@ -39,60 +38,22 @@ glutWindow win;
 
 bool fullscreen = false;
 
-//Shape shp;
-
 int d = N;
 int texture_size = 16;
 int upDown_x = 0;
 int upDown_z = 0;
 int leftRight_rotation = 45;
 int r_speed = 7;
-float down_speed = 0.001;
 int zoom = 40;
-float down = d / 2 + 2;
 float movex = -1;
 float movez = -1;
 const int base_size = 15;
-int score = 0;
 bool gameOver = false;
 
 bool stop = true;
 int base[base_size][base_size][base_size];
  
 void *font = GLUT_BITMAP_HELVETICA_18;
-
-void destroyer() {}
-
-void checkSides(int undox, int undoz) {}
-
-void putInBase() {}
-
-void drawBase() {}
-
-void printTxt(float x, float y, char *String) {
-	char *c;
-
-	glPushMatrix();
-	glLoadIdentity();
-	glMatrixMode(GL_PROJECTION);
-
-	glPushMatrix();
-	glLoadIdentity();
-	gluOrtho2D(0, 10, 0, 10);
-
-	glColor3f(9.0f, 0.7f, 0.4f);
-	glRasterPos2f(x, y);
-	glDisable(GL_LIGHTING);
-
-	for (c = String; *c != '\0'; c++)
-		glutBitmapCharacter(font, *c);
-
-	glPopMatrix();
-
-	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();
-
-}
 
 void drawCube(float x, float y, float z, float size, GLuint textureID) {
     glEnable(GL_TEXTURE_2D);
@@ -268,22 +229,9 @@ GLuint loadTexture(const char* filename) {
 }
 
 void display() {
-	char scr[20];
-	char scre[20];
-	
-	//#ifndef LOAD_TEXTURE
-	//#define LOAD_TEXTURE
-
-	//#endif
-
-	strcpy(scr, "SCORE :");
-	sprintf(scre, "%d", score);
-	strcat(scr, scre);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
-
-	printTxt(1.0f, 1.0f, scr);
 
 	glLoadIdentity();
 	gluLookAt(zoom, 2, 0, 0, 0, 0, 0, 1, 0);
@@ -304,14 +252,6 @@ void display() {
 				{
 					glPushMatrix();
 
-					// glTranslatef(0, 0, 0);
-					// glRotatef(0, 0, 1, 0);
-					// glRotatef(0, 1, 0, 0);
-					// glRotatef(0, 0, 0, 1);
-
-					// glTranslatef(j, k, l);
-
-                    // glutSolidCube(1);
 					drawCube(j, k, l, 1, cobblestoneID);
 
 					glPopMatrix();
@@ -321,8 +261,6 @@ void display() {
 	}
 
 	glPopMatrix();
-
-	drawBase();
 
 	glutSwapBuffers();
 	glFlush();
@@ -455,9 +393,6 @@ void special_keys(int keys, int x, int y) {
 	default:
 		break;
 	}
-
-	if (!stop)
-		checkSides(undox, undoz);
 }
 
 /*void mouse_button(int button, int state, int x, int y) {
@@ -526,16 +461,6 @@ void keyboard(unsigned char key, int mousePositionX, int mousePositionY) {
 
 		break;
 
-	case '-':
-		if (down_speed > 0.01 && !stop)
-			down_speed -= 0.005;
-		break;
-
-	case '=':
-		if (down_speed <= 0.10 && !stop)
-			down_speed += 0.005;
-		break;
-
 	case 'f':
 		if (zoom > 2)
 			zoom -= 2;
@@ -580,9 +505,9 @@ void keyboard(unsigned char key, int mousePositionX, int mousePositionY) {
 
 void initialize()
 {
-	cobblestoneID = loadTexture("cobblestone.png");
-	floorID = loadTexture("floor.png");
-	fujisanID = loadTexture("fujisan.png");
+	cobblestoneID = loadTexture("../../textures/cobblestone.png");
+	floorID = loadTexture("../../textures/floor.png");
+	fujisanID = loadTexture("../../textures/fujisan.png");
 
 	// select projection matrix
 	glMatrixMode(GL_PROJECTION);
@@ -604,15 +529,6 @@ void initialize()
 	glMatrixMode(GL_MODELVIEW);
 	glShadeModel(GL_SMOOTH);
 
-	glEnable(GL_LIGHT0);
-	glEnable(GL_COLOR_MATERIAL);
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_LIGHTING);
-	glShadeModel(GL_SMOOTH);
-	
-	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
-	glDepthFunc(GL_LEQUAL);
-
 	// specify the clear value for the depth buffer
 	glClearDepth(1.0f);
 	glEnable(GL_DEPTH_TEST);
@@ -621,13 +537,6 @@ void initialize()
 
 	// specify implementation-specific hints
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-
-	// GLfloat amb_light[] = { 0.6, 0.6, 0.6, 1.0 };
-	// GLfloat diffuse[] = { 0.5, 0.5, 0.5, 1 };
-	// GLfloat specular[] = { 0.5, 0.5, 0.6, 1 };
-	// glLightModelfv(GL_LIGHT_MODEL_AMBIENT, amb_light);
-	// glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
-	// glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
 	
 	GLfloat material_ambient[] = { 0.7, 0.7, 0.7, 1.0 };  // Ambient material color (RGBA)
 	GLfloat material_diffuse[] = { 0.9, 0.9, 0.9, 1.0 };  // Diffuse material color (RGBA)
@@ -637,16 +546,12 @@ void initialize()
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, material_diffuse);
 	glMaterialfv(GL_FRONT, GL_SPECULAR, material_specular);
 	glMaterialf(GL_FRONT, GL_SHININESS, shininess);
-
-	// glClearColor(0.0, 0.0, 0.0, 1.0);
-
 }
 
 int main(int argc, char** argv) {
 	//set window values
 	win.width = 640;
 	win.height = 480;
-	win.title = const_cast<char*>("Tetris 3D");
 	win.field_of_view_angle = 45;
 	win.z_near = 1.0f;
 	win.z_far = 500.0f;
@@ -667,9 +572,6 @@ int main(int argc, char** argv) {
     base[0][0][0] = 1;
     base[0][0][1] = 1;
     base[0][1][0] = 1;
-
-	//shp.createShape();
-	//shp.initShape();
 
 	glutInit(&argc, argv);// Initialize glut
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);// Display Mode
