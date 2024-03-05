@@ -27,15 +27,15 @@ int startGame() {
 
 
         update_game(boardMat, width);
-        for(int k = 0; k < height; k++) {
-            for(int i = 0; i < width; i++) {
-                for(int j = 0; j < depth; j++) {
-                    cout << boardMat[i][j][k] << " ";
-                }
-                cout << endl;
-            }
-            cout << endl;
-        }
+        // for(int k = 0; k < height; k++) {
+        //     for(int i = 0; i < width; i++) {
+        //         for(int j = 0; j < depth; j++) {
+        //             cout << boardMat[i][j][k] << " ";
+        //         }
+        //         cout << endl;
+        //     }
+        //     cout << endl;
+        // }
 
         // TEMPORARY : Print the top level of the board
         // for(int i = 0; i < width; i++) {
@@ -55,9 +55,10 @@ int main(int argc, char** argv) {
     // thread interfaceThread(&interface);
 
     // Launch the game
-    main_display(argc, argv);
     thread gameThread(&startGame);
+    thread displayThread(&main_display, argc, argv);
     gameThread.join();
-    
+    displayThread.join();
+
     return 0;
 }
