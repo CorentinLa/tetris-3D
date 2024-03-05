@@ -1,3 +1,6 @@
+#ifndef DISPLAY_GAME_HPP
+#define DISPLAY_GAME_HPP
+
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,6 +13,7 @@
 #include <SOIL/SOIL.h>
 #include <stdexcept>
 #include <new>
+
 
 GLuint cobblestoneID;
 GLuint floorID;
@@ -224,3 +228,7 @@ GLuint loadTexture(const char* filename) {
 }
 
 void update_game(int*** new_base, int base_size);
+
+int main_display(int argc, char** argv);
+
+#endif

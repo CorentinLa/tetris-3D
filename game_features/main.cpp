@@ -14,6 +14,7 @@ int startGame() {
         unique_lock<mutex> lck(mtx);
         gameEnded = onGoingGame.gameLoop();
         Board board = onGoingGame.getBoard();
+        
         // Wait for a while
         this_thread::sleep_for(chrono::milliseconds(1000/onGoingGame.getDifficulty()));
         
@@ -24,6 +25,8 @@ int startGame() {
         int depth = board.getDepth();
         int height = board.getHeight();
 
+
+        update_game(boardMat, width);
         for(int k = 0; k < height; k++) {
             for(int i = 0; i < width; i++) {
                 for(int j = 0; j < depth; j++) {
@@ -47,12 +50,14 @@ return 0;
 }
 
 
-int main() {
+int main(int argc, char** argv) {
     // Launch the interface
     // thread interfaceThread(&interface);
 
     // Launch the game
+    main_display(argc, argv);
     thread gameThread(&startGame);
     gameThread.join();
+    
     return 0;
 }

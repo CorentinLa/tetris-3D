@@ -335,7 +335,7 @@ void initialize()
 	glMaterialf(GL_FRONT, GL_SHININESS, shininess);
 }
 
-int main(int argc, char** argv) {
+int main_display(int argc, char** argv) {
 	//set window values
 	win.width = 640;
 	win.height = 480;
