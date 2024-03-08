@@ -57,3 +57,8 @@ Tetris3D : Classe principale instanciant et reliant les différents modules.
 
 Chaque module doit être conçu de manière à pouvoir être étendu facilement.
 Utilisation de classes abstraites et de l'héritage pour ajouter de nouvelles fonctionnalités.
+
+Librairies à installer :
+
+libvlc-dev
+vlc

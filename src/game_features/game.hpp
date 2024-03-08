@@ -78,7 +78,7 @@ public:
 
         // Create the piece
         Piece piece((int)board.getWidth()/2,(int) board.getDepth()/2,board.getHeight()-3);
-        cout << "Piece" << pieceIndex << " created at " << piece.getX() << " " << piece.getY() << " " << piece.getZ() << endl;
+        //cout << "Piece" << pieceIndex << " created at " << piece.getX() << " " << piece.getY() << " " << piece.getZ() << endl;
         piece.setShape(pieceShapes[pieceIndex]);
 
         nextPiece = piece;

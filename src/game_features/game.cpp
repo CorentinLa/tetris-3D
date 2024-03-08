@@ -114,7 +114,6 @@ int Game::currentPieceMovable(char direction) const {
                 if(z+shape[i].z-1 < 0 || z+shape[i].z-1 >= board.getHeight()) return 0;
 
                 if(board.getBoardMat()[x+shape[i].x][y+shape[i].y][z+shape[i].z-1] == 2) {
-                    cout << "HERE" << endl;
                     return 0;
                 }
                 break;    
@@ -194,7 +193,6 @@ int Game::gameLoop() {
         changeNextPiece();
 
     } else {
-        cout << "Piece moved down" << endl;
         // If the move is possible, destroy the current piece and construct it at its new position
         board.constructPiece(currentPiece, 0);
 
