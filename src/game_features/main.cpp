@@ -5,7 +5,7 @@ mutex mtx;
 // The game will have to lock when it reads the keyboard input
 
 int startGame() {
-    Game onGoingGame(10, 10, 10);
+    Game onGoingGame(15, 15, 15);
     // Launch keyboard reading thread
     initGame(&onGoingGame);
 
@@ -15,18 +15,19 @@ int startGame() {
         unique_lock<mutex> lck(mtx);
         gameEnded = onGoingGame.gameLoop();
         Board board = onGoingGame.getBoard();
+        int*** boardMat = board.getBoardMat();
+        int width = board.getWidth(); 
+        update_game(boardMat, width);
         
         // Wait for a while
         this_thread::sleep_for(chrono::milliseconds(1000/onGoingGame.getDifficulty()));
         
         // TEMPORARY : Print the board
         
-        int*** boardMat = board.getBoardMat();
-        int width = board.getWidth(); 
+        
+        
         int depth = board.getDepth();
         int height = board.getHeight();
-
-        update_game(boardMat, width);
 
         // for(int k = 0; k < height; k++) {
         //     for(int i = 0; i < width; i++) {
@@ -61,6 +62,7 @@ int playMusic() {
     libvlc_media_t *vlc_media = libvlc_media_new_path(inst, location);
 
     libvlc_media_player_t *vlc_player = libvlc_media_player_new_from_media(vlc_media);
+    libvlc_audio_set_volume(vlc_player, 20);
     libvlc_media_player_play(vlc_player); //this line will play the video and audio
 
     // while(1) {
@@ -78,8 +80,8 @@ int main(int argc, char** argv) {
     // thread interfaceThread(&interface);
 
     // start musing on a separate process and not thread.
-    thread musicThread(&playMusic);
-    musicThread.join();
+    // thread musicThread(&playMusic);
+    // musicThread.detach();
 
     // Launch the game
     thread gameThread(&startGame);

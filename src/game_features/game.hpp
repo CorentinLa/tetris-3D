@@ -44,6 +44,8 @@ public:
     void setTime(float t) { time = t; };
     void changeCurrentPiece() { currentPiece = nextPiece; };
 
+    Piece getCurrentPiece() const {return currentPiece;};
+
     void moveCurrentPiece(char direction) {
         switch(direction) {
         case 'X':
@@ -87,6 +89,16 @@ public:
     // Code in game.cpp
     
     int currentPieceMovable(char direction) const;
+
+    int destroyCurrentPiece() {
+        board.constructPiece(currentPiece, 0);
+        return 0;
+    }
+
+    int constructCurrentPiece() {
+        board.constructPiece(currentPiece, 1);
+        return 0;
+    }
 
 };
 

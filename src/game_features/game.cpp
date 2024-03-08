@@ -138,12 +138,18 @@ int Game::gameLoop() {
         int x = currentPiece.getX();
         int y = currentPiece.getY();
         int z = currentPiece.getZ();
+        vector<Coordinates> shape = currentPiece.getShape();
 
         // Check if a line is complete
         int lineXComplete = 1;
         int lineYComplete = 1;
 
+        int nb_LinesX = 0;
+        int nb_LinesY = 0;
+
+
         for(int k=z; k<z+4 && k < board.getHeight(); k++) {
+            if (k == 0) continue;
         for(int i=x; i<x+4 && i < board.getWidth(); i++) {
             for(int j=0; j<board.getDepth(); j++) {
                 if(boardMat[i][j][k] != 2) {
@@ -151,7 +157,14 @@ int Game::gameLoop() {
                     break;
                 }
                 }
+                if (lineXComplete == 1) {
+                    board.removeLine('x', i, k);
+                    nb_LinesX++;
+                } else {
+                    lineXComplete = 1;
+                }
             }
+
         for(int i=y; i<y+4 && i < board.getDepth(); i++) {
             for(int j=0; j<board.getWidth(); j++) {
                 if(boardMat[j][i][k] != 2) {
@@ -159,23 +172,27 @@ int Game::gameLoop() {
                     break;
                 }
                 }
+                if (lineYComplete == 1) {
+                    board.removeLine('y', i, k);
+                    nb_LinesY++;
+                } else {
+                    lineYComplete = 1;
+                }
             }
-
         }
         setScore(score+sqrt(getTime())*10);
-        if(lineXComplete == 1 && lineYComplete == 1) {
-            // Remove the line
-            board.removeLine('x', x, z);
-            board.removeLine('y', y, z);
-            setScore(score+sqrt(getTime())*1000);
-        }
-        else if(lineXComplete == 1) {
-            board.removeLine('x', x, z);
-            setScore(score+sqrt(getTime())*100);
-        }
-        else if(lineYComplete == 1) {
-            board.removeLine('y', y, z);
-            setScore(score+sqrt(getTime())*100);
+        while(nb_LinesX > 0 or nb_LinesY > 0) {
+            if(nb_LinesX > 0 && nb_LinesY > 0) {
+                setScore(score+sqrt(getTime())*1000);
+                nb_LinesX--;
+                nb_LinesY--;
+            } else if(nb_LinesX > 0) {
+                setScore(score+sqrt(getTime())*100);
+                nb_LinesX--;
+            } else if(nb_LinesY > 0) {
+                setScore(score+sqrt(getTime())*100);
+                nb_LinesY--;
+            }
         }
 
         // Check if the game is over

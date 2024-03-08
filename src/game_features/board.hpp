@@ -84,7 +84,6 @@ class Board
             }
         }
 
-        void destroyCurrentPiece(Piece piece) { constructPiece(piece, 0); };
 
 
         // Remove a line from the board : type = 'x' or 'y', index = index of the line, z = z coordinate of the line

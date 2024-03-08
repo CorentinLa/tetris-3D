@@ -398,25 +398,39 @@ void keyboard(unsigned char key, int mousePositionX, int mousePositionY) {
 
 	switch (key)
 	{
-	case 'z': // Z
-		printf("z pressed\n");
+	case 'q': // Z
 		if (onGoingGame->currentPieceMovable('Y')) {
+			onGoingGame->destroyCurrentPiece();
 			onGoingGame->moveCurrentPiece('Y');
+			onGoingGame->constructCurrentPiece();
 		}
 		break;
-	case 's': // S
+	case 'd': // S
 		if (onGoingGame->currentPieceMovable('y')) {
+			onGoingGame->destroyCurrentPiece();
 			onGoingGame->moveCurrentPiece('y');
+			onGoingGame->constructCurrentPiece();
 		}
 		break;
-	case 'q': // Q
+	case 'z': // Q
 		if (onGoingGame->currentPieceMovable('x')) {
+			onGoingGame->destroyCurrentPiece();
 			onGoingGame->moveCurrentPiece('x');
+			onGoingGame->constructCurrentPiece();
 		}
 		break;
-	case 'd': // D
+	case 's': // D
 		if (onGoingGame->currentPieceMovable('X')) {
+			onGoingGame->destroyCurrentPiece();
 			onGoingGame->moveCurrentPiece('X');
+			onGoingGame->constructCurrentPiece();
+		}
+		break;
+	case 'a': // A
+		if (onGoingGame->currentPieceMovable('z')) {
+			onGoingGame->destroyCurrentPiece();
+			onGoingGame->moveCurrentPiece('z');
+			onGoingGame->constructCurrentPiece();
 		}
 		break;
 	case 'i':
@@ -499,6 +513,8 @@ void keyboard(unsigned char key, int mousePositionX, int mousePositionY) {
 	default:
 		break;
 	}
+	// Redraw objects
+	glutPostRedisplay();
 }
 
 void initialize()
