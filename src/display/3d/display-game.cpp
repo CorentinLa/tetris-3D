@@ -398,22 +398,23 @@ void keyboard(unsigned char key, int mousePositionX, int mousePositionY) {
 
 	switch (key)
 	{
-	case 90: // Z
+	case 'z': // Z
+		printf("z pressed\n")
 		if (onGoingGame->currentPieceMovable('Y')) {
 			onGoingGame->moveCurrentPiece('Y');
 		}
 		break;
-	case 83: // S
+	case 's': // S
 		if (onGoingGame->currentPieceMovable('y')) {
 			onGoingGame->moveCurrentPiece('y');
 		}
 		break;
-	case 81: // Q
+	case 'q': // Q
 		if (onGoingGame->currentPieceMovable('x')) {
 			onGoingGame->moveCurrentPiece('x');
 		}
 		break;
-	case 68: // D
+	case 'd': // D
 		if (onGoingGame->currentPieceMovable('X')) {
 			onGoingGame->moveCurrentPiece('X');
 		}
@@ -463,7 +464,7 @@ void keyboard(unsigned char key, int mousePositionX, int mousePositionY) {
 			zoom -= 2;
 		break;
 
-	case 'd':
+	case 'g':
 		if (zoom < 100)
 			zoom += 2;
 		break;
