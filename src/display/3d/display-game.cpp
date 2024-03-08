@@ -399,7 +399,7 @@ void keyboard(unsigned char key, int mousePositionX, int mousePositionY) {
 	switch (key)
 	{
 	case 'z': // Z
-		printf("z pressed\n")
+		printf("z pressed\n");
 		if (onGoingGame->currentPieceMovable('Y')) {
 			onGoingGame->moveCurrentPiece('Y');
 		}
