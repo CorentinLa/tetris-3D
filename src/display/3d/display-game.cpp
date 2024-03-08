@@ -21,6 +21,7 @@ float movex = -1;
 float movez = -1;
 bool gameOver = false;
 const int base_size = 15;
+Game* onGoingGame;
 
 bool stop = true;
 
@@ -248,6 +249,10 @@ void display() {
 
 }
 
+void initGame(Game* startedGame) {
+	onGoingGame = startedGame;
+}
+
 void normal_keys(unsigned char key, int x, int y) {
 	if (key == 27) exit(0);
 }
@@ -370,7 +375,6 @@ void special_keys(int keys, int x, int y) {
 			}
 		}
 		break;
-
 	default:
 		break;
 	}
@@ -394,14 +398,27 @@ void keyboard(unsigned char key, int mousePositionX, int mousePositionY) {
 
 	switch (key)
 	{
-	case 's':
-		if (stop)
-			stop = false;
-		else
-			stop = true;
-
+	case 'z': // Z
+		printf("z pressed\n");
+		if (onGoingGame->currentPieceMovable('Y')) {
+			onGoingGame->moveCurrentPiece('Y');
+		}
 		break;
-
+	case 's': // S
+		if (onGoingGame->currentPieceMovable('y')) {
+			onGoingGame->moveCurrentPiece('y');
+		}
+		break;
+	case 'q': // Q
+		if (onGoingGame->currentPieceMovable('x')) {
+			onGoingGame->moveCurrentPiece('x');
+		}
+		break;
+	case 'd': // D
+		if (onGoingGame->currentPieceMovable('X')) {
+			onGoingGame->moveCurrentPiece('X');
+		}
+		break;
 	case 'i':
 		if (moires <= 45 || moires > 315)
 		{
@@ -447,7 +464,7 @@ void keyboard(unsigned char key, int mousePositionX, int mousePositionY) {
 			zoom -= 2;
 		break;
 
-	case 'd':
+	case 'g':
 		if (zoom < 100)
 			zoom += 2;
 		break;
@@ -531,6 +548,7 @@ void initialize()
 }
 
 int main_display(int argc, char** argv) {
+
 	//set window values
 	win.width = 640;
 	win.height = 480;

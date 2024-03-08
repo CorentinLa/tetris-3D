@@ -7,6 +7,7 @@ mutex mtx;
 int startGame() {
     Game onGoingGame(10, 10, 10);
     // Launch keyboard reading thread
+    initGame(&onGoingGame);
 
     // Launch main loop
     int gameEnded = 1;

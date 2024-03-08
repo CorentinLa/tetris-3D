@@ -13,6 +13,7 @@
 #include <SOIL/SOIL.h>
 #include <stdexcept>
 #include <new>
+#include "../../game_features/game.hpp"
 
 #define KEY_ESCAPE 27
 #define N 15.00
@@ -27,6 +28,8 @@ typedef struct {
 	float z_near;
 	float z_far;
 }glutWindow;
+
+void initGame(Game* startedGame);
 
 void drawCube(float x, float y, float z, float size, GLuint textureID);
 
