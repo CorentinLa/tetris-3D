@@ -24,7 +24,7 @@ private:
     int difficulty;
 
 public:
-    Game(int width, int depth, int height): board(width, depth, height), score(0), time(0.0f), difficulty(1) {
+    Game(int width, int depth, int height, int difficulty): board(width, depth, height), score(0), time(0.0f), difficulty(difficulty) {
         readPiecesShapes();
         changeNextPiece();
         changeCurrentPiece();
