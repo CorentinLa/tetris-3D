@@ -19,9 +19,9 @@ class Board
                 for(int j=0; j<depth; j++) {
                     boardMat[i][j] = new int[height];
                     for(int k=0; k<height; k++) {
-                        // Temporary : fill the ground with 2
+                        // fill the ground with 3
                         if(k == 0) {
-                            boardMat[i][j][k] = 2;
+                            boardMat[i][j][k] = 3;
                         }
                         else boardMat[i][j][k] = 0;
                     }

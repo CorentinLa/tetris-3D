@@ -75,6 +75,8 @@ public:
 
     void setRotation(char axe, int angle); // angle in degrees
 
+    void rotate(char axe, char sens); // sens = p or n
+
 };
 
 #endif

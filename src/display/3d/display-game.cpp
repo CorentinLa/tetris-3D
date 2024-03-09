@@ -211,6 +211,16 @@ void display() {
 
 	drawGrid();
 
+	// write the score
+
+	glColor3f(1, 1, 1);
+	glRasterPos3f(-N / 2, N / 2, -N / 2);
+	std::string score = "Score: " + std::to_string(onGoingGame->getScore());
+	for (int i = 0; i < score.length(); i++)
+	{
+		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, score[i]);
+	}
+
 	drawFloor(floorID);
 
     for (int j = 0; j < base_size; j++)
@@ -227,9 +237,7 @@ void display() {
 
 					glPopMatrix();
 				}
-				else
-				{
-					if (base[j][k][l] == 1)
+				else if (base[j][k][l] == 1)
 					{
 						glPushMatrix();
 
@@ -237,10 +245,19 @@ void display() {
 
 						glPopMatrix();
 					}
+				else if (base[j][k][l] == 3)
+				{
+					glPushMatrix();
+
+					drawCube(j, l-base_size/2, k, 1, cobblestoneID);
+
+					glPopMatrix();
 				}
 			}
 		}
 	}
+
+	
 
 	glPopMatrix();
 
@@ -426,11 +443,53 @@ void keyboard(unsigned char key, int mousePositionX, int mousePositionY) {
 			onGoingGame->constructCurrentPiece();
 		}
 		break;
-	case 'a': // A
+	case 'w': 
 		if (onGoingGame->currentPieceMovable('z')) {
 			onGoingGame->destroyCurrentPiece();
 			onGoingGame->moveCurrentPiece('z');
 			onGoingGame->constructCurrentPiece();
+		}
+		break;
+	case 'a':
+		if(onGoingGame->currentPieceRotatable('z', 'p')) {
+		onGoingGame->destroyCurrentPiece();
+		onGoingGame->rotateCurrentPiece('z', 'p');
+		onGoingGame->constructCurrentPiece();
+		}
+		break;
+	case 'e':
+		if(onGoingGame->currentPieceRotatable('z', 'n')) {
+		onGoingGame->destroyCurrentPiece();
+		onGoingGame->rotateCurrentPiece('z', 'n');
+		onGoingGame->constructCurrentPiece();
+		}
+		break;
+	// case 'r':
+	// 	if(onGoingGame->currentPieceRotatable('x', 'p')) {
+	// 	onGoingGame->destroyCurrentPiece();
+	// 	onGoingGame->rotateCurrentPiece('x', 'p');
+	// 	onGoingGame->constructCurrentPiece();
+	// 	}
+	// 	break;
+	// case 'f':
+	// 	if(onGoingGame->currentPieceRotatable('x', 'n')) {
+	// 	onGoingGame->destroyCurrentPiece();
+	// 	onGoingGame->rotateCurrentPiece('x', 'n');
+	// 	onGoingGame->constructCurrentPiece();
+	// 	}
+	// 	break;
+	case 'u':
+		if(onGoingGame->currentPieceRotatable('y', 'p')) {
+		onGoingGame->destroyCurrentPiece();
+		onGoingGame->rotateCurrentPiece('y', 'p');
+		onGoingGame->constructCurrentPiece();
+		}
+		break;
+	case 'o':
+		if(onGoingGame->currentPieceRotatable('y', 'n')) {
+		onGoingGame->destroyCurrentPiece();
+		onGoingGame->rotateCurrentPiece('y', 'n');
+		onGoingGame->constructCurrentPiece();
 		}
 		break;
 	case 'i':
@@ -473,7 +532,7 @@ void keyboard(unsigned char key, int mousePositionX, int mousePositionY) {
 
 		break;
 
-	case 'f':
+	case 'h':
 		if (zoom > 2)
 			zoom -= 2;
 		break;
@@ -584,8 +643,6 @@ int main_display(int argc, char** argv) {
 			}
 		}
 	}
-
-	std::cout << "main display thread" << std::this_thread::get_id() << "\n";
 
     base[0][0][0] = 1;
     base[0][0][1] = 1;

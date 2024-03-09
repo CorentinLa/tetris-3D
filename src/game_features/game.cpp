@@ -74,7 +74,7 @@ int Game::currentPieceMovable(char direction) const {
                 if(x+shape[i].x+1 >= board.getWidth()) {
                     return 0;
                 }
-                if(board.getBoardMat()[x+shape[i].x+1][y+shape[i].y][z+shape[i].z] == 2) {
+                if(board.getBoardMat()[x+shape[i].x+1][y+shape[i].y][z+shape[i].z] >= 2) {
                     return 0;
                 }
                 break;
@@ -82,7 +82,7 @@ int Game::currentPieceMovable(char direction) const {
                 if(y+shape[i].y+1 >= board.getDepth()) {
                     return 0;
                 }
-                if(board.getBoardMat()[x+shape[i].x][y+shape[i].y+1][z+shape[i].z] == 2) {
+                if(board.getBoardMat()[x+shape[i].x][y+shape[i].y+1][z+shape[i].z] >= 2) {
                     return 0;
                 }
                 break;
@@ -90,7 +90,7 @@ int Game::currentPieceMovable(char direction) const {
                 if(z+shape[i].z+1 >= board.getHeight()) {
                     return 0;
                 }
-                if(board.getBoardMat()[x+shape[i].x][y+shape[i].y][z+shape[i].z+1] == 2) {
+                if(board.getBoardMat()[x+shape[i].x][y+shape[i].y][z+shape[i].z+1] >= 2) {
                     return 0;
                 }
                 break;
@@ -98,7 +98,7 @@ int Game::currentPieceMovable(char direction) const {
                 if(x+shape[i].x-1 < 0) {
                     return 0;
                 }
-                if(board.getBoardMat()[x+shape[i].x-1][y+shape[i].y][z+shape[i].z] == 2) {
+                if(board.getBoardMat()[x+shape[i].x-1][y+shape[i].y][z+shape[i].z] >= 2) {
                     return 0;
                 }
                 break;
@@ -106,14 +106,14 @@ int Game::currentPieceMovable(char direction) const {
                 if(y+shape[i].y-1 < 0) {
                     return 0;
                 }
-                if(board.getBoardMat()[x+shape[i].x][y+shape[i].y-1][z+shape[i].z] == 2) {
+                if(board.getBoardMat()[x+shape[i].x][y+shape[i].y-1][z+shape[i].z] >= 2) {
                     return 0;
                 }
                 break;
             case 'z':
                 if(z+shape[i].z-1 < 0 || z+shape[i].z-1 >= board.getHeight()) return 0;
 
-                if(board.getBoardMat()[x+shape[i].x][y+shape[i].y][z+shape[i].z-1] == 2) {
+                if(board.getBoardMat()[x+shape[i].x][y+shape[i].y][z+shape[i].z-1] >= 2) {
                     return 0;
                 }
                 break;    
@@ -127,10 +127,125 @@ int Game::currentPieceMovable(char direction) const {
     return 1;
 }
 
+int Game::currentPieceRotatable(char axe, char sens) const {
+    // Rotate the current piece
+    // Return 1 if the rotation is possible, 0 if not
+
+    // Check if the rotation is possible
+    vector<Coordinates> shape = currentPiece.getShape();
+    int x_piece = currentPiece.getX();
+    int y_piece = currentPiece.getY();
+    int z_piece = currentPiece.getZ();
+
+        switch(axe)
+        {
+            case 'z':
+                if(sens == 'p')
+                {
+                    for (int i = 0; i < shape.size(); i++)
+                    {
+                        int x_temp = shape[i].x;
+                        int x = -shape[i].y;
+                        int y = x_temp;
+                        if(currentPiece.getX()+x < 0 || currentPiece.getX()+x >= board.getWidth()) return 0;
+                    if(currentPiece.getY()+y < 0 || currentPiece.getY()+y >= board.getDepth()) return 0;
+                    if(currentPiece.getZ()+shape[i].z < 0 || currentPiece.getZ()+shape[i].z >= board.getHeight()) return 0;
+                        if(board.getBoardMat()[x_piece+x][y_piece+y][shape[i].z] >= 2) return 0;
+                    }
+                }
+                else if(sens == 'n')
+                {
+                    for (int i = 0; i < shape.size(); i++)
+                    {
+                        int x_temp = shape[i].x;
+                        int x = shape[i].y;
+                        int y = -x_temp;
+                        if(currentPiece.getX()+x < 0 || currentPiece.getX()+x >= board.getWidth()) return 0;
+                    if(currentPiece.getY()+y < 0 || currentPiece.getY()+y >= board.getDepth()) return 0;
+                    if(currentPiece.getZ()+shape[i].z < 0 || currentPiece.getZ()+shape[i].z >= board.getHeight()) return 0;
+                        if(board.getBoardMat()[x_piece+x][y_piece+y][shape[i].z] >= 2) return 0;
+                    }
+                }
+                else
+                {
+                    cout << "Error: sens must be p or n" << endl;
+                    return 0;
+                }
+                break;
+        case 'x':
+            if(sens == 'p')
+            {
+                for (int i = 0; i < shape.size(); i++)
+                {
+                    int y_temp = shape[i].y;
+                    int y = -shape[i].z;
+                    int z = y_temp;
+                    if(currentPiece.getX()+shape[i].x < 0 || currentPiece.getX()+shape[i].x >= board.getWidth()) return 0;
+                    if(currentPiece.getY()+y < 0 || currentPiece.getY()+y >= board.getDepth()) return 0;
+                    if(currentPiece.getZ()+z < 0 || currentPiece.getZ()+z >= board.getHeight()) return 0;
+                    if(board.getBoardMat()[shape[i].x][y_piece+y][z_piece+z] >= 2) return 0;
+                }
+            }
+            else if(sens == 'n')
+            {
+                for (int i = 0; i < shape.size(); i++)
+                {
+                    int y_temp = shape[i].y;
+                    int y = shape[i].z;
+                    int z = -y_temp;
+                    if(currentPiece.getX()+shape[i].x < 0 || currentPiece.getX()+shape[i].x >= board.getWidth()) return 0;
+                    if(currentPiece.getY()+y < 0 || currentPiece.getY()+y >= board.getDepth()) return 0;
+                    if(currentPiece.getZ()+z < 0 || currentPiece.getZ()+z >= board.getHeight()) return 0;
+                    if(board.getBoardMat()[shape[i].x][y_piece+y][z_piece+z] >= 2) return 0;
+                }
+            }
+            else
+            {
+                cout << "Error: sens must be p or n" << endl;
+                return 0;
+            }
+        case 'y':
+            if(sens == 'p')
+            {
+                for (int i = 0; i < shape.size(); i++)
+                {
+                    int x_temp = shape[i].x;
+                    int x = -shape[i].z;
+                    int z = x_temp;
+                    if(currentPiece.getX()+x < 0 || currentPiece.getX()+x >= board.getWidth()) return 0;
+                    if(currentPiece.getZ()+z < 0 || currentPiece.getZ()+z >= board.getHeight()) return 0;
+                    if(currentPiece.getY()+shape[i].y < 0 || currentPiece.getY()+shape[i].y >= board.getDepth()) return 0;
+                    if(board.getBoardMat()[x_piece+x][shape[i].y][z_piece+z] >= 2) return 0;
+                }
+            }
+            else if(sens == 'n')
+            {
+                for (int i = 0; i < shape.size(); i++)
+                {
+                    int x_temp = shape[i].x;
+                    int x = shape[i].z;
+                    int z = -x_temp;
+                    if(currentPiece.getX()+x < 0 || currentPiece.getX()+x >= board.getWidth()) return 0;
+                    if(currentPiece.getY()+shape[i].y < 0 || currentPiece.getY()+shape[i].y >= board.getDepth()) return 0;
+                    if(currentPiece.getZ()+z < 0 || currentPiece.getZ()+z >= board.getHeight()) return 0;
+                    if(board.getBoardMat()[x_piece+x][shape[i].y][z_piece+z] >= 2) return 0;
+                }
+            }
+            else
+            {
+                cout << "Error: sens must be p or n" << endl;
+                return 0;
+            }
+    }
+    return 1;
+}
+
 int Game::gameLoop() {
     // Main game loop
     // Return 0 if the game is over, 1 if not
     // Try to move the current piece down
+    time += 1;
+
     if(currentPieceMovable('z') == 0) {
         // If the move is not possible, put the piece in the board
         board.constructPiece(currentPiece, 2);
@@ -138,7 +253,6 @@ int Game::gameLoop() {
         int x = currentPiece.getX();
         int y = currentPiece.getY();
         int z = currentPiece.getZ();
-        vector<Coordinates> shape = currentPiece.getShape();
 
         // Check if a line is complete
         int lineXComplete = 1;
@@ -149,36 +263,38 @@ int Game::gameLoop() {
 
 
         for(int k=z; k<z+4 && k < board.getHeight(); k++) {
-            if (k == 0) continue;
-        for(int i=x; i<x+4 && i < board.getWidth(); i++) {
-            for(int j=0; j<board.getDepth(); j++) {
-                if(boardMat[i][j][k] != 2) {
-                    lineXComplete = 0;
-                    break;
+            if (k <= 0) continue;
+            for(int i=x; i<x+4 && i < board.getWidth(); i++) {
+                if(i >= board.getWidth() || i < 0) continue;
+                for(int j=0; j<board.getDepth(); j++) {
+                    if(boardMat[i][j][k] != 2) {
+                        lineXComplete = 0;
+                        break;
+                    }
+                    }
+                    if (lineXComplete == 1) {
+                        board.removeLine('x', i, k);
+                        nb_LinesX++;
+                    } else {
+                        lineXComplete = 1;
+                    }
                 }
-                }
-                if (lineXComplete == 1) {
-                    board.removeLine('x', i, k);
-                    nb_LinesX++;
-                } else {
-                    lineXComplete = 1;
-                }
-            }
 
-        for(int i=y; i<y+4 && i < board.getDepth(); i++) {
-            for(int j=0; j<board.getWidth(); j++) {
-                if(boardMat[j][i][k] != 2) {
-                    lineYComplete = 0;
-                    break;
+            for(int i=y; i<y+4 && i < board.getDepth(); i++) {
+                if(i >= board.getDepth() || i<0) continue;
+                for(int j=0; j<board.getWidth(); j++) {
+                    if(boardMat[j][i][k] != 2) {
+                        lineYComplete = 0;
+                        break;
+                    }
+                    }
+                    if (lineYComplete == 1) {
+                        board.removeLine('y', i, k);
+                        nb_LinesY++;
+                    } else {
+                        lineYComplete = 1;
+                    }
                 }
-                }
-                if (lineYComplete == 1) {
-                    board.removeLine('y', i, k);
-                    nb_LinesY++;
-                } else {
-                    lineYComplete = 1;
-                }
-            }
         }
         setScore(score+sqrt(getTime())*10);
         while(nb_LinesX > 0 or nb_LinesY > 0) {
@@ -197,7 +313,9 @@ int Game::gameLoop() {
 
         // Check if the game is over
         for(int i=x; i<x+4 && i < board.getWidth(); i++) {
+            if (i >= board.getWidth() || i < 0) continue;
             for(int j=y; j<y+4 && j < board.getDepth(); j++) {
+                if (j >= board.getDepth() || j < 0) continue;
                 if(boardMat[i][j][board.getHeight()-1] == 2) {
                     cout << "Game over" << endl;
                     return 0;
@@ -212,7 +330,6 @@ int Game::gameLoop() {
     } else {
         // If the move is possible, destroy the current piece and construct it at its new position
         board.constructPiece(currentPiece, 0);
-
         // Construct the piece at its new position
         moveCurrentPiece('z');
         board.constructPiece(currentPiece, 1);

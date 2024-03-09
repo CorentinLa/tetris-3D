@@ -38,6 +38,7 @@ public:
     float getTime() const {return time;};
     Board getBoard() const {return board;};
     int getDifficulty() const {return difficulty;};
+    int getScore() const {return score;};
 
     void setDifficulty(int d) { difficulty = d; };
     void setScore(uint16_t s) { score = s; };
@@ -89,6 +90,7 @@ public:
     // Code in game.cpp
     
     int currentPieceMovable(char direction) const;
+    int currentPieceRotatable(char axe, char sens) const;
 
     int destroyCurrentPiece() {
         board.constructPiece(currentPiece, 0);
@@ -97,6 +99,11 @@ public:
 
     int constructCurrentPiece() {
         board.constructPiece(currentPiece, 1);
+        return 0;
+    }
+
+    int rotateCurrentPiece(char axe, char sens) {
+        currentPiece.rotate(axe, sens);
         return 0;
     }
 

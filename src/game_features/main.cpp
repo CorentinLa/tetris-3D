@@ -5,7 +5,7 @@ mutex mtx;
 // The game will have to lock when it reads the keyboard input
 
 int startGame() {
-    Game onGoingGame(15, 15, 15);
+    Game onGoingGame(12, 12, 12);
     // Launch keyboard reading thread
     initGame(&onGoingGame);
 
@@ -19,33 +19,8 @@ int startGame() {
         int width = board.getWidth(); 
         update_game(boardMat, width);
         
-        // Wait for a while
-        this_thread::sleep_for(chrono::milliseconds(1000/onGoingGame.getDifficulty()));
-        
-        // TEMPORARY : Print the board
-        
-        
-        
-        int depth = board.getDepth();
-        int height = board.getHeight();
-
-        // for(int k = 0; k < height; k++) {
-        //     for(int i = 0; i < width; i++) {
-        //         for(int j = 0; j < depth; j++) {
-        //             cout << boardMat[i][j][k] << " ";
-        //         }
-        //         cout << endl;
-        //     }
-        //     cout << endl;
-        // }
-
-        // TEMPORARY : Print the top level of the board
-        // for(int i = 0; i < width; i++) {
-        //     for(int j = 0; j < depth; j++) {
-        //         cout << boardMat[i][j][height-1] << " ";
-        //     }
-        //     cout << endl;
-        // }
+        // Wait for next iteration. The time to wait depends on the difficulty and the time spent in the game
+        this_thread::sleep_for(chrono::milliseconds(max((int)floor(1000/(onGoingGame.getDifficulty()+onGoingGame.getTime()/300)),200/onGoingGame.getDifficulty())));
     }
 
 return 0;
@@ -55,7 +30,7 @@ int playMusic() {
     // Play the music 
     libvlc_instance_t *inst;
     const char * const vlc_args[] = {
-        "--file-caching=20000"  // Set the file caching value to 10000 milliseconds (10 seconds)
+        "--file-caching=120000"  // Set the file caching value to 10000 milliseconds (10 seconds)
     };
     inst = libvlc_new(1, vlc_args);
     char const *location = "./resources/sounds/classic_tetris.flac";
@@ -80,8 +55,8 @@ int main(int argc, char** argv) {
     // thread interfaceThread(&interface);
 
     // start musing on a separate process and not thread.
-    // thread musicThread(&playMusic);
-    // musicThread.detach();
+     thread musicThread(&playMusic);
+     musicThread.detach();
 
     // Launch the game
     thread gameThread(&startGame);
