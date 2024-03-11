@@ -5,9 +5,8 @@ using namespace std;
 
 int startGame() {
     Parameters params;
-
-    music gameMusic("resources/sounds/classic_tetris.flac", params.volume);
-    Game onGoingGame(params.width, params.depth, params.height, params.difficulty);
+    Game onGoingGame(params);
+    music gameMusic("resources/sounds/classic_tetris.flac", onGoingGame.params.volume);
     // Launch keyboard reading thread
     initGame(&onGoingGame);
 
@@ -16,9 +15,9 @@ int startGame() {
     while(gameEnded) {
         if(onGoingGame.getTime() > 10 && !gameMusic.isPlaying()) {
             if (onGoingGame.getTime() > 900) {
-                gameMusic.playMusic("resources/sounds/highscore.flac");
+                gameMusic.playSound("resources/sounds/highscore.flac");
             } else {
-            gameMusic.playMusic("resources/sounds/classic_tetris.flac");
+            gameMusic.playSound("resources/sounds/classic_tetris.flac");
             }
         }
         gameEnded = onGoingGame.gameLoop();
@@ -30,7 +29,7 @@ int startGame() {
         // Wait for next iteration. The time to wait depends on the difficulty and the time spent in the game
         this_thread::sleep_for(chrono::milliseconds(max((int)floor(1000/(onGoingGame.getDifficulty()+onGoingGame.getTime()/300)),200/onGoingGame.getDifficulty())));
         if (onGoingGame.getTime() == 900) {
-            gameMusic.playMusic("resources/sounds/highscore.flac");
+            gameMusic.playSound("resources/sounds/highscore.flac");
         }
     }
 

@@ -203,6 +203,23 @@ GLuint loadTexture(const char* filename) {
 
 void display() {
 
+
+	// show fps
+	static int frame = 0, time, timebase = 0;
+	static char buffer[256];
+
+	frame++;
+	time = glutGet(GLUT_ELAPSED_TIME);
+	if (time - timebase > 1000) {
+		sprintf(buffer, "FPS:%4.2f",
+			frame*1000.0 / (time - timebase));
+			glutSetWindowTitle(buffer);
+		timebase = time;
+		frame = 0;
+	}
+
+	
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
 
@@ -483,6 +500,7 @@ void keyboard(unsigned char key, int mousePositionX, int mousePositionY) {
 		onGoingGame->destroyCurrentPiece();
 		onGoingGame->rotateCurrentPiece('y', 'p');
 		onGoingGame->constructCurrentPiece();
+		glutPostRedisplay();
 		}
 		break;
 	case 'o':
@@ -490,6 +508,7 @@ void keyboard(unsigned char key, int mousePositionX, int mousePositionY) {
 		onGoingGame->destroyCurrentPiece();
 		onGoingGame->rotateCurrentPiece('y', 'n');
 		onGoingGame->constructCurrentPiece();
+		glutPostRedisplay();
 		}
 		break;
 	case 'i':
@@ -572,7 +591,10 @@ void keyboard(unsigned char key, int mousePositionX, int mousePositionY) {
 	default:
 		break;
 	}
-	// Redraw objects
+		Board board = onGoingGame->getBoard();
+        int*** boardMat = board.getBoardMat();
+        int width = board.getWidth(); 
+        update_game(boardMat, width); 
 	glutPostRedisplay();
 }
 

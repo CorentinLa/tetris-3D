@@ -65,6 +65,10 @@ class Board
         int getHeight() const {return height;};
         int getDepth() const {return depth;};
 
+        void setWidth(int newWidth) {width = newWidth;};
+        void setHeight(int newHeight) {height = newHeight;};
+        void setDepth(int newDepth) {depth = newDepth;};
+
         int*** getBoardMat() const {return boardMat;};
 
         void constructPiece(Piece piece, int type) {

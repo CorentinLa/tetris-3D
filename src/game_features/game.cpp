@@ -297,6 +297,17 @@ int Game::gameLoop() {
                 }
         }
         setScore(score+sqrt(getTime())*10);
+        if (nb_LinesX > 0 || nb_LinesY > 0) {
+            std::thread([this] {
+                music sound("resources/sounds/line_complete.wav", min(params.volume+10, 100));
+                this_thread::sleep_for(chrono::milliseconds(1000));
+            }).detach();
+        } else {
+            std::thread([this] {
+                music sound("resources/sounds/piece_landing.flac", min(params.volume+10, 100));
+                this_thread::sleep_for(chrono::milliseconds(1000));
+            }).detach();
+        }
         while(nb_LinesX > 0 or nb_LinesY > 0) {
             if(nb_LinesX > 0 && nb_LinesY > 0) {
                 setScore(score+sqrt(getTime())*1000);
@@ -329,10 +340,12 @@ int Game::gameLoop() {
 
     } else {
         // If the move is possible, destroy the current piece and construct it at its new position
-        board.constructPiece(currentPiece, 0);
+        // board.constructPiece(currentPiece, 0);
+        destroyCurrentPiece();
         // Construct the piece at its new position
         moveCurrentPiece('z');
-        board.constructPiece(currentPiece, 1);
+        constructCurrentPiece();
+        // board.constructPiece(currentPiece, 1);
     }
 
 
