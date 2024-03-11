@@ -137,6 +137,24 @@ int Game::currentPieceRotatable(char axe, char sens) const {
     int y_piece = currentPiece.getY();
     int z_piece = currentPiece.getZ();
 
+    int centre_x = 0;
+    int centre_y = 0;
+    int centre_z = 0;
+
+    // calculate the center of the piece
+
+    for (int i = 0; i < shape.size(); i++)
+    {
+        centre_x += shape[i].x;
+        centre_y += shape[i].y;
+        centre_z += shape[i].z;
+    }
+
+    centre_x /= shape.size();
+    centre_y /= shape.size();
+    centre_z /= shape.size();
+
+
         switch(axe)
         {
             case 'z':
@@ -145,12 +163,12 @@ int Game::currentPieceRotatable(char axe, char sens) const {
                     for (int i = 0; i < shape.size(); i++)
                     {
                         int x_temp = shape[i].x;
-                        int x = -shape[i].y;
-                        int y = x_temp;
-                        if(currentPiece.getX()+x < 0 || currentPiece.getX()+x >= board.getWidth()) return 0;
-                    if(currentPiece.getY()+y < 0 || currentPiece.getY()+y >= board.getDepth()) return 0;
-                    if(currentPiece.getZ()+shape[i].z < 0 || currentPiece.getZ()+shape[i].z >= board.getHeight()) return 0;
-                        if(board.getBoardMat()[x_piece+x][y_piece+y][shape[i].z] >= 2) return 0;
+                        int x = -(shape[i].y-centre_y);
+                        int y = x_temp-centre_x;
+                        if(currentPiece.getX()+x < 0 || currentPiece.getX()+x >= board.getWidth()){ cout << "1"; return 0;}
+                    if(currentPiece.getY()+y < 0 || currentPiece.getY()+y >= board.getDepth()) {cout << "2";return 0;}
+                    if(currentPiece.getZ()+shape[i].z < 0 || currentPiece.getZ()+shape[i].z >= board.getHeight()) {cout << "3"; return 0;}
+                        if(board.getBoardMat()[x_piece+x][y_piece+y][z_piece+shape[i].z] >= 2) {cout << "4";return 0;}
                     }
                 }
                 else if(sens == 'n')
@@ -158,12 +176,12 @@ int Game::currentPieceRotatable(char axe, char sens) const {
                     for (int i = 0; i < shape.size(); i++)
                     {
                         int x_temp = shape[i].x;
-                        int x = shape[i].y;
-                        int y = -x_temp;
+                        int x = shape[i].y-centre_y;
+                        int y = -(x_temp-centre_x);
                         if(currentPiece.getX()+x < 0 || currentPiece.getX()+x >= board.getWidth()) return 0;
                     if(currentPiece.getY()+y < 0 || currentPiece.getY()+y >= board.getDepth()) return 0;
                     if(currentPiece.getZ()+shape[i].z < 0 || currentPiece.getZ()+shape[i].z >= board.getHeight()) return 0;
-                        if(board.getBoardMat()[x_piece+x][y_piece+y][shape[i].z] >= 2) return 0;
+                        if(board.getBoardMat()[x_piece+x][y_piece+y][z_piece+shape[i].z] >= 2) return 0;
                     }
                 }
                 else
@@ -178,12 +196,12 @@ int Game::currentPieceRotatable(char axe, char sens) const {
                 for (int i = 0; i < shape.size(); i++)
                 {
                     int y_temp = shape[i].y;
-                    int y = -shape[i].z;
-                    int z = y_temp;
+                    int y = -(shape[i].z-centre_z);
+                    int z = y_temp-centre_y;
                     if(currentPiece.getX()+shape[i].x < 0 || currentPiece.getX()+shape[i].x >= board.getWidth()) return 0;
                     if(currentPiece.getY()+y < 0 || currentPiece.getY()+y >= board.getDepth()) return 0;
                     if(currentPiece.getZ()+z < 0 || currentPiece.getZ()+z >= board.getHeight()) return 0;
-                    if(board.getBoardMat()[shape[i].x][y_piece+y][z_piece+z] >= 2) return 0;
+                    if(board.getBoardMat()[x_piece+shape[i].x][y_piece+y][z_piece+z] >= 2) return 0;
                 }
             }
             else if(sens == 'n')
@@ -191,12 +209,12 @@ int Game::currentPieceRotatable(char axe, char sens) const {
                 for (int i = 0; i < shape.size(); i++)
                 {
                     int y_temp = shape[i].y;
-                    int y = shape[i].z;
-                    int z = -y_temp;
+                    int y = shape[i].z-centre_z;
+                    int z = -(y_temp-centre_y);
                     if(currentPiece.getX()+shape[i].x < 0 || currentPiece.getX()+shape[i].x >= board.getWidth()) return 0;
                     if(currentPiece.getY()+y < 0 || currentPiece.getY()+y >= board.getDepth()) return 0;
                     if(currentPiece.getZ()+z < 0 || currentPiece.getZ()+z >= board.getHeight()) return 0;
-                    if(board.getBoardMat()[shape[i].x][y_piece+y][z_piece+z] >= 2) return 0;
+                    if(board.getBoardMat()[x_piece+shape[i].x][y_piece+y][z_piece+z] >= 2) return 0;
                 }
             }
             else
@@ -210,12 +228,12 @@ int Game::currentPieceRotatable(char axe, char sens) const {
                 for (int i = 0; i < shape.size(); i++)
                 {
                     int x_temp = shape[i].x;
-                    int x = -shape[i].z;
-                    int z = x_temp;
+                    int x = -(shape[i].z-centre_z);
+                    int z = x_temp-centre_x;
                     if(currentPiece.getX()+x < 0 || currentPiece.getX()+x >= board.getWidth()) return 0;
                     if(currentPiece.getZ()+z < 0 || currentPiece.getZ()+z >= board.getHeight()) return 0;
                     if(currentPiece.getY()+shape[i].y < 0 || currentPiece.getY()+shape[i].y >= board.getDepth()) return 0;
-                    if(board.getBoardMat()[x_piece+x][shape[i].y][z_piece+z] >= 2) return 0;
+                    if(board.getBoardMat()[x_piece+x][y_piece+shape[i].y][z_piece+z] >= 2) return 0;
                 }
             }
             else if(sens == 'n')
@@ -223,12 +241,12 @@ int Game::currentPieceRotatable(char axe, char sens) const {
                 for (int i = 0; i < shape.size(); i++)
                 {
                     int x_temp = shape[i].x;
-                    int x = shape[i].z;
-                    int z = -x_temp;
+                    int x = shape[i].z-centre_z;
+                    int z = -(x_temp-centre_x);
                     if(currentPiece.getX()+x < 0 || currentPiece.getX()+x >= board.getWidth()) return 0;
                     if(currentPiece.getY()+shape[i].y < 0 || currentPiece.getY()+shape[i].y >= board.getDepth()) return 0;
                     if(currentPiece.getZ()+z < 0 || currentPiece.getZ()+z >= board.getHeight()) return 0;
-                    if(board.getBoardMat()[x_piece+x][shape[i].y][z_piece+z] >= 2) return 0;
+                    if(board.getBoardMat()[x_piece+x][y_piece+shape[i].y][z_piece+z] >= 2) return 0;
                 }
             }
             else

@@ -27,6 +27,23 @@ void Piece::setRotation(char axe, int angle) // angle in degrees
 
 void Piece::rotate(char axe, char sens)
 {
+    int centre_x = 0;
+    int centre_y = 0;
+    int centre_z = 0;
+
+    // calculate the center of the piece
+
+    for (int i = 0; i < shape.size(); i++)
+    {
+        centre_x += shape[i].x;
+        centre_y += shape[i].y;
+        centre_z += shape[i].z;
+    }
+
+    centre_x /= shape.size();
+    centre_y /= shape.size();
+    centre_z /= shape.size();
+
     switch(axe)
     {
         case 'x':
@@ -35,8 +52,9 @@ void Piece::rotate(char axe, char sens)
                 for (int i = 0; i < shape.size(); i++)
                 {
                     int y = shape[i].y;
-                    shape[i].y = -shape[i].z;
-                    shape[i].z = y;
+                    shape[i].y = -(shape[i].z-centre_z);
+                    shape[i].z = y-centre_y;
+
                 }
             }
             else if(sens == 'n')
@@ -44,8 +62,8 @@ void Piece::rotate(char axe, char sens)
                 for (int i = 0; i < shape.size(); i++)
                 {
                     int y = shape[i].y;
-                    shape[i].y = shape[i].z;
-                    shape[i].z = -y;
+                    shape[i].y = shape[i].z - centre_z;
+                    shape[i].z = -(y-centre_y);
                 }
             }
             break;
@@ -55,8 +73,8 @@ void Piece::rotate(char axe, char sens)
                 for (int i = 0; i < shape.size(); i++)
                 {
                     int x = shape[i].x;
-                    shape[i].x = -shape[i].z;
-                    shape[i].z = x;
+                    shape[i].x = -(shape[i].z-centre_z);
+                    shape[i].z = x-centre_x;
                 }
             }
             else if(sens == 'n')
@@ -64,8 +82,8 @@ void Piece::rotate(char axe, char sens)
                 for (int i = 0; i < shape.size(); i++)
                 {
                     int x = shape[i].x;
-                    shape[i].x = shape[i].z;
-                    shape[i].z = -x;
+                    shape[i].x = shape[i].z-centre_z;
+                    shape[i].z = -(x-centre_x);
                 }
             }
             break;
@@ -75,8 +93,8 @@ void Piece::rotate(char axe, char sens)
                 for (int i = 0; i < shape.size(); i++)
                 {
                     int x = shape[i].x;
-                    shape[i].x = -shape[i].y;
-                    shape[i].y = x;
+                    shape[i].x = -(shape[i].y-centre_y);
+                    shape[i].y = x-centre_x;
                 }
             }
             else if(sens == 'n')
@@ -84,8 +102,8 @@ void Piece::rotate(char axe, char sens)
                 for (int i = 0; i < shape.size(); i++)
                 {
                     int x = shape[i].x;
-                    shape[i].x = shape[i].y;
-                    shape[i].y = -x;
+                    shape[i].x = shape[i].y-centre_y;
+                    shape[i].y = -(x-centre_x);
                 }
             }
             break;
