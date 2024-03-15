@@ -16,7 +16,6 @@
 #include "../../game_features/game.hpp"
 
 #define KEY_ESCAPE 27
-#define N 15.00
 
 using namespace std;
 
@@ -33,15 +32,13 @@ void initGame(Game* startedGame);
 
 void drawCube(float x, float y, float z, float size, GLuint textureID);
 
-void drawFloor(GLuint textureID);
-
 void drawBackground(GLuint textureID);
 
 void drawGrid();
 
 GLuint loadTexture(const char* filename);
 
-void update_game(int*** new_base, int base_size);
+void update_game(int*** new_base, int base_width, int base_depth, int base_height);
 
 int main_display(int argc, char** argv);
 

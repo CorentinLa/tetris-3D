@@ -1,6 +1,6 @@
 #include"display-game.hpp"
 #include<thread>
-
+#include "../../game_features/game.hpp"
 //sudo apt-get install libsoil-dev
 //sudo apt-get install freeglut3-dev
 
@@ -9,8 +9,6 @@
 
 
 bool fullscreen = false;
-
-int d = N;
 int texture_size = 16;
 int upDown_x = 0;
 int upDown_z = 0;
@@ -19,15 +17,17 @@ int r_speed = 7;
 int zoom = 40;
 float movex = -1;
 float movez = -1;
-bool gameOver = false;
-const int base_size = 15;
+const int N = 10;
+int d = N;
+const int base_size = N;
+const int base_height = 2*N;
 Game* onGoingGame;
 
 bool stop = true;
 
 void *font = GLUT_BITMAP_HELVETICA_18;
 
-int base[base_size][base_size][base_size];
+int base[base_size][base_height][base_size];
 
 GLuint cobblestoneID;
 GLuint goldID;
@@ -35,11 +35,11 @@ GLuint floorID;
 GLuint ironID;
 glutWindow win;
 
-void update_game(int*** new_base, int base_s) {
-	for (int i = 0; i < base_s; ++i) {
-		for (int j = 0; j < base_s;  ++j) {
-			for (int k = 0; k < base_s; ++k) {
-				base[i][j][k] = new_base[i][j][k];
+void update_game(int*** new_base, int base_width, int base_depth, int base_height) {
+	for (int i = 0; i < base_width; ++i) {
+		for (int j = 0; j < base_height;  ++j) {
+			for (int k = 0; k < base_depth; ++k) {
+				base[i][j][k] = new_base[i][k][j];
 			}								
 		}					
 	}
@@ -92,30 +92,6 @@ void drawCube(float x, float y, float z, float size, GLuint textureID) {
     glDisable(GL_TEXTURE_2D);
 }
 
-void drawFloor(GLuint textureID) {
-	glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, textureID);
-
-    const float tileSize = 1;
-
-    glBegin(GL_QUADS);
-    for (int i = -base_size; i < base_size; ++i) {
-        for (int j = -base_size; j < base_size; ++j) {
-            float x = i * tileSize;
-            float z = j * tileSize;
-
-            // Draw each quad with texture coordinates
-            glTexCoord2f(0.0f, 0.0f); glVertex3f(x, -base_size/2-1, z);
-            glTexCoord2f(1.0f, 0.0f); glVertex3f(x + tileSize, -base_size/2-1, z);
-            glTexCoord2f(1.0f, 1.0f); glVertex3f(x + tileSize, -base_size/2-1, z + tileSize);
-            glTexCoord2f(0.0f, 1.0f); glVertex3f(x, -base_size/2-1, z + tileSize);
-        }
-    }
-    glEnd();
-
-    glDisable(GL_TEXTURE_2D);
-}
-
 void drawGrid() {
 
 	float i;
@@ -128,62 +104,49 @@ void drawGrid() {
 	glRotatef(upDown_x, 1, 0, 0);
 	glRotatef(upDown_z, 0, 0, 1);
 
-	// glBindTexture(GL_TEXTURE_2D, textureID);
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
 	glColor3f(0.7, 0.6, 0.9);
-	for (i = -N / 2; i <= N / 2; i++)
-	{
-		glBegin(GL_LINES);
-		glVertex3f(i, N / 2, -N / 2);
-		glVertex3f(i, -N / 2, -N / 2);
-		glEnd();
-	}
+	glBegin(GL_LINES);
 
-	for (i = -N / 2; i <= N / 2; i++)
-	{
-		glBegin(GL_LINES);
-		glVertex3f(N / 2, i, -N / 2);
-		glVertex3f(-N / 2, i, -N / 2);
-		glEnd();
-	}
+	//limites du terrain en bas
+	glVertex3f(-N/2-0.5, -N-0.5, -0.5-N/2);
+	glVertex3f(-N/2-0.5, -N-0.5, N/2-0.5);
 
-	for (i = -N / 2; i <= N / 2; i++)
-	{
-		glBegin(GL_LINES);
-		glVertex3f(-N / 2, N / 2, i);
-		glVertex3f(-N / 2, -N / 2, i);
-		glEnd();
-	}
+	glVertex3f(-N/2-0.5, -N-0.5, N/2-0.5);
+	glVertex3f(N/2-0.5, -N-0.5, N/2-0.5);
 
-	for (i = -N / 2; i <= N / 2; i++)
-	{
-		glBegin(GL_LINES);
-		glVertex3f(-N / 2, i, N / 2);
-		glVertex3f(-N / 2, i, -N / 2);
-		glEnd();
-	}
+	glVertex3f(N/2-0.5, -N-0.5, N/2-0.5);
+	glVertex3f(N/2-0.5, -N-0.5, -0.5-N/2);
 
+	glVertex3f(N/2-0.5, -N-0.5, -0.5-N/2);
+	glVertex3f(-N/2-0.5, -N-0.5, -0.5-N/2);
 
-	glColor3f(0.9, 0.9, 0.6);
-	for (i = -N / 2; i <= N / 2; i++)
-	{
-		glBegin(GL_LINES);
-		glVertex3f(i, -N / 2, -N / 2);
-		glVertex3f(i, -N / 2, N / 2);
-		glEnd();
-	}
+	//limites du terrain en haut
+	glVertex3f(-N/2-0.5, 2*N-0.5, -0.5-N/2);
+	glVertex3f(-N/2-0.5, 2*N-0.5, N/2-0.5);
 
-	for (i = -N / 2; i <= N / 2; i++)
-	{
-		glBegin(GL_LINES);
-		glVertex3f(N / 2, -N / 2, i);
-		glVertex3f(-N / 2, -N / 2, i);
-		glEnd();
-	}
+	glVertex3f(-N/2-0.5, 2*N-0.5, N/2-0.5);
+	glVertex3f(N/2-0.5, 2*N-0.5, N/2-0.5);
+
+	glVertex3f(N/2-0.5, 2*N-0.5, N/2-0.5);
+	glVertex3f(N/2-0.5, 2*N-0.5, -0.5-N/2);
+
+	glVertex3f(N/2-0.5, 2*N-0.5, -0.5-N/2);
+	glVertex3f(-N/2-0.5, 2*N-0.5, -0.5-N/2);
+
+	//limites du terrain sur les côtés
+	glVertex3f(-N/2-0.5, -N-0.5, -N/2-0.5);
+	glVertex3f(-N/2-0.5, 2*N-0.5, -N/2-0.5);
+
+	glVertex3f(-N/2-0.5, -N-0.5, N/2-0.5);
+	glVertex3f(-N/2-0.5, 2*N-0.5, N/2-0.5);
+
+	glVertex3f(N/2-0.5, -N-0.5, N/2-0.5);
+	glVertex3f(N/2-0.5, 2*N-0.5, -0.5+N/2);
+
+	glVertex3f(N/2-0.5, -N-0.5, -0.5-N/2);
+	glVertex3f(N/2-0.5, 2*N-0.5, -0.5-N/2);
+
+	glEnd();
 }
 
 GLuint loadTexture(const char* filename) {
@@ -238,35 +201,33 @@ void display() {
 		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, score[i]);
 	}
 
-	drawFloor(floorID);
-
     for (int j = 0; j < base_size; j++)
 	{
 		for (int k = 0; k < base_size; k++)
 		{
-			for (int l = 0; l < base_size; l++)
+			for (int l = 0; l < base_height; l++)
 			{
-				if (base[j][k][l] == 2)
+				if (base[j][l][k] == 2)
 				{
 					glPushMatrix();
 
-					drawCube(j, l-base_size/2, k, 1, ironID);
+					drawCube(j-base_size/2, l-base_height/2, k-base_size/2, 1, ironID);
 
 					glPopMatrix();
 				}
-				else if (base[j][k][l] == 1)
+				else if (base[j][l][k] == 1)
 					{
 						glPushMatrix();
 
-						drawCube(j, l-base_size/2, k, 1, goldID);
+						drawCube(j-base_size/2, l-base_height/2, k-base_size/2, 1, goldID);
 
 						glPopMatrix();
 					}
-				else if (base[j][k][l] == 3)
+				else if (base[j][l][k] == 3)
 				{
 					glPushMatrix();
 
-					drawCube(j, l-base_size/2, k, 1, cobblestoneID);
+					drawCube(j-base_size/2, l-base_height/2, k-base_size/2, 1, cobblestoneID);
 
 					glPopMatrix();
 				}
@@ -594,7 +555,10 @@ void keyboard(unsigned char key, int mousePositionX, int mousePositionY) {
 		Board board = onGoingGame->getBoard();
         int*** boardMat = board.getBoardMat();
         int width = board.getWidth(); 
-        update_game(boardMat, width); 
+		int depth = board.getDepth(); 
+        int height = board.getHeight(); 
+
+        update_game(boardMat, width, depth, height); 
 	glutPostRedisplay();
 }
 
@@ -655,20 +619,16 @@ int main_display(int argc, char** argv) {
 
 
     //initalize base with zeros
-	for (int i = 0; i < d; i++)
+	for (int i = 0; i < base_size; i++)
 	{
-		for (int j = 0; j < d; j++)
+		for (int j = 0; j < base_height; j++)
 		{
-			for (int k = 0; k < d; k++)
+			for (int k = 0; k < base_size; k++)
 			{
 				base[i][j][k] = 0;
 			}
 		}
 	}
-
-    base[0][0][0] = 1;
-    base[0][0][1] = 1;
-    base[0][1][0] = 1;
 
 	glutInit(&argc, argv);// Initialize glut
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);// Display Mode

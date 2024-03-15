@@ -315,17 +315,17 @@ int Game::gameLoop() {
                 }
         }
         setScore(score+sqrt(getTime())*10);
-        if (nb_LinesX > 0 || nb_LinesY > 0) {
-            std::thread([this] {
-                music sound("resources/sounds/line_complete.wav", min(params.volume+10, 100));
-                this_thread::sleep_for(chrono::milliseconds(1000));
-            }).detach();
-        } else {
-            std::thread([this] {
-                music sound("resources/sounds/piece_landing.flac", min(params.volume+10, 100));
-                this_thread::sleep_for(chrono::milliseconds(1000));
-            }).detach();
-        }
+        // if (nb_LinesX > 0 || nb_LinesY > 0) {
+        //     std::thread([this] {
+        //         music sound("resources/sounds/line_complete.wav", min(params.volume+10, 100));
+        //         this_thread::sleep_for(chrono::milliseconds(1000));
+        //     }).detach();
+        // } else {
+        //     std::thread([this] {
+        //         music sound("resources/sounds/piece_landing.flac", min(params.volume+10, 100));
+        //         this_thread::sleep_for(chrono::milliseconds(1000));
+        //     }).detach();
+        // }
         while(nb_LinesX > 0 or nb_LinesY > 0) {
             if(nb_LinesX > 0 && nb_LinesY > 0) {
                 setScore(score+sqrt(getTime())*1000);
