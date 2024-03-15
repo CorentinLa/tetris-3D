@@ -35,7 +35,7 @@ class Board
         ~Board() {
             // Free memory
             //cout << boardMat << endl;
-            //cout << "Deleting board" << endl;
+            // cout << "Deleting board" << endl;
             for(int i=0; i<width; i++) {
                 //cout << "Deleting boardMat[" << i << "]" << endl;
                 for(int j=0; j<depth; j++) {

@@ -187,7 +187,7 @@ void display() {
 	glMatrixMode(GL_MODELVIEW);
 
 	glLoadIdentity();
-	gluLookAt(zoom, 2, 0, 0, 0, 0, 0, 1, 0);
+	gluLookAt(zoom, 2, 2, 0, 0, 0, 0, 1, 0);
 
 	drawGrid();
 
@@ -249,7 +249,7 @@ void initGame(Game* startedGame) {
 }
 
 void normal_keys(unsigned char key, int x, int y) {
-	if (key == 27) exit(0);
+
 }
 
 void special_keys(int keys, int x, int y) {
@@ -390,9 +390,19 @@ void keyboard(unsigned char key, int mousePositionX, int mousePositionY) {
 	else
 		moires = leftRight_rotation % 360;
 
-
 	switch (key)
 	{
+	case '&':
+		glDeleteTextures(1, &cobblestoneID);
+		glDeleteTextures(1, &floorID);
+		glDeleteTextures(1, &goldID);
+		glDeleteTextures(1, &ironID);
+		// destroy objects and free memory
+		onGoingGame->endedGame = 0;
+		this_thread::sleep_for(chrono::milliseconds(200));
+		exit(0);
+
+
 	case 'q': // Z
 		if (onGoingGame->currentPieceMovable('Y')) {
 			onGoingGame->destroyCurrentPiece();
@@ -409,9 +419,11 @@ void keyboard(unsigned char key, int mousePositionX, int mousePositionY) {
 		break;
 	case 'z': // Q
 		if (onGoingGame->currentPieceMovable('x')) {
+			std::unique_lock<std::mutex> lock(onGoingGame->mtx);
 			onGoingGame->destroyCurrentPiece();
 			onGoingGame->moveCurrentPiece('x');
 			onGoingGame->constructCurrentPiece();
+			lock.unlock();
 		}
 		break;
 	case 's': // D
@@ -442,20 +454,20 @@ void keyboard(unsigned char key, int mousePositionX, int mousePositionY) {
 		onGoingGame->constructCurrentPiece();
 		}
 		break;
-	// case 'r':
-	// 	if(onGoingGame->currentPieceRotatable('x', 'p')) {
-	// 	onGoingGame->destroyCurrentPiece();
-	// 	onGoingGame->rotateCurrentPiece('x', 'p');
-	// 	onGoingGame->constructCurrentPiece();
-	// 	}
-	// 	break;
-	// case 'f':
-	// 	if(onGoingGame->currentPieceRotatable('x', 'n')) {
-	// 	onGoingGame->destroyCurrentPiece();
-	// 	onGoingGame->rotateCurrentPiece('x', 'n');
-	// 	onGoingGame->constructCurrentPiece();
-	// 	}
-	// 	break;
+	case 'r':
+		if(onGoingGame->currentPieceRotatable('x', 'p')) {
+		onGoingGame->destroyCurrentPiece();
+		onGoingGame->rotateCurrentPiece('x', 'p');
+		onGoingGame->constructCurrentPiece();
+		}
+		break;
+	case 'f':
+		if(onGoingGame->currentPieceRotatable('x', 'n')) {
+		onGoingGame->destroyCurrentPiece();
+		onGoingGame->rotateCurrentPiece('x', 'n');
+		onGoingGame->constructCurrentPiece();
+		}
+		break;
 	case 'u':
 		if(onGoingGame->currentPieceRotatable('y', 'p')) {
 		onGoingGame->destroyCurrentPiece();
@@ -611,8 +623,8 @@ void initialize()
 int main_display(int argc, char** argv) {
 
 	//set window values
-	win.width = 640;
-	win.height = 480;
+	win.width = 600;
+	win.height = 800;
 	win.field_of_view_angle = 45;
 	win.z_near = 1.0f;
 	win.z_far = 500.0f;
@@ -639,9 +651,13 @@ int main_display(int argc, char** argv) {
 	glutKeyboardFunc(keyboard);// Set the normal keyboard function
 	glutSpecialFunc(special_keys);// Set the special keyboard function
     //glutMouseFunc(mouse_button);// Set the mouse button function
+	
 	initialize();
     
     glutMainLoop();// Initialize main loop
+
+	
+	
 	
 	return 0;
 }

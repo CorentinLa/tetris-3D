@@ -27,9 +27,9 @@ void Piece::setRotation(char axe, int angle) // angle in degrees
 
 void Piece::rotate(char axe, char sens)
 {
-    int centre_x = 0;
-    int centre_y = 0;
-    int centre_z = 0;
+    float centre_x = 0;
+    float centre_y = 0;
+    float centre_z = 0;
 
     // calculate the center of the piece
 
@@ -43,6 +43,11 @@ void Piece::rotate(char axe, char sens)
     centre_x /= shape.size();
     centre_y /= shape.size();
     centre_z /= shape.size();
+
+    // Convert to integers
+    centre_x = round(centre_x);
+    centre_y = round(centre_y);
+    centre_z = round(centre_z);
 
     switch(axe)
     {

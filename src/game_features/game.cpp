@@ -4,13 +4,6 @@
 
 using namespace std;
 
-// int startGame(int width, int height, int depth) {
-//     Board board(width, height, depth);
-//     Piece piece;
-//     board.constructPiece(piece);
-//     return 0;
-// }
-
 
 int Game::readPiecesShapes() {
     // Read the pieces shapes from a file
@@ -137,9 +130,9 @@ int Game::currentPieceRotatable(char axe, char sens) const {
     int y_piece = currentPiece.getY();
     int z_piece = currentPiece.getZ();
 
-    int centre_x = 0;
-    int centre_y = 0;
-    int centre_z = 0;
+    float centre_x = 0;
+    float centre_y = 0;
+    float centre_z = 0;
 
     // calculate the center of the piece
 
@@ -149,11 +142,9 @@ int Game::currentPieceRotatable(char axe, char sens) const {
         centre_y += shape[i].y;
         centre_z += shape[i].z;
     }
-
     centre_x /= shape.size();
     centre_y /= shape.size();
     centre_z /= shape.size();
-
 
         switch(axe)
         {
@@ -163,12 +154,12 @@ int Game::currentPieceRotatable(char axe, char sens) const {
                     for (int i = 0; i < shape.size(); i++)
                     {
                         int x_temp = shape[i].x;
-                        int x = -(shape[i].y-centre_y);
-                        int y = x_temp-centre_x;
-                        if(currentPiece.getX()+x < 0 || currentPiece.getX()+x >= board.getWidth()){ cout << "1"; return 0;}
-                    if(currentPiece.getY()+y < 0 || currentPiece.getY()+y >= board.getDepth()) {cout << "2";return 0;}
-                    if(currentPiece.getZ()+shape[i].z < 0 || currentPiece.getZ()+shape[i].z >= board.getHeight()) {cout << "3"; return 0;}
-                        if(board.getBoardMat()[x_piece+x][y_piece+y][z_piece+shape[i].z] >= 2) {cout << "4";return 0;}
+                        int x = -(shape[i].y-(int)centre_y);
+                        int y = x_temp-(int)centre_x;
+                        if(currentPiece.getX()+x < 0 || currentPiece.getX()+x >= board.getWidth()){ cout << "1" << endl; return 0;}
+                    if(currentPiece.getY()+y < 0 || currentPiece.getY()+y >= board.getDepth()) {cout << "2"<< endl;return 0;}
+                    if(currentPiece.getZ()+shape[i].z < 0 || currentPiece.getZ()+shape[i].z >= board.getHeight()) {cout << "3"<< endl; return 0;}
+                        if(board.getBoardMat()[x_piece+x][y_piece+y][z_piece+shape[i].z] >= 2) {cout << "4"<< endl;return 0;}
                     }
                 }
                 else if(sens == 'n')
@@ -279,11 +270,9 @@ int Game::gameLoop() {
         int nb_LinesX = 0;
         int nb_LinesY = 0;
 
-
-        for(int k=z; k<z+4 && k < board.getHeight(); k++) {
+        for(int k=-5; k<z+5 && k < board.getHeight(); k++) {
             if (k <= 0) continue;
-            for(int i=x; i<x+4 && i < board.getWidth(); i++) {
-                if(i >= board.getWidth() || i < 0) continue;
+            for(int i=0; i < board.getWidth(); i++) {
                 for(int j=0; j<board.getDepth(); j++) {
                     if(boardMat[i][j][k] != 2) {
                         lineXComplete = 0;
@@ -298,8 +287,7 @@ int Game::gameLoop() {
                     }
                 }
 
-            for(int i=y; i<y+4 && i < board.getDepth(); i++) {
-                if(i >= board.getDepth() || i<0) continue;
+            for(int i=0; i< board.getDepth()-1; i++) {
                 for(int j=0; j<board.getWidth(); j++) {
                     if(boardMat[j][i][k] != 2) {
                         lineYComplete = 0;
@@ -315,17 +303,17 @@ int Game::gameLoop() {
                 }
         }
         setScore(score+sqrt(getTime())*10);
-        // if (nb_LinesX > 0 || nb_LinesY > 0) {
-        //     std::thread([this] {
-        //         music sound("resources/sounds/line_complete.wav", min(params.volume+10, 100));
-        //         this_thread::sleep_for(chrono::milliseconds(1000));
-        //     }).detach();
-        // } else {
-        //     std::thread([this] {
-        //         music sound("resources/sounds/piece_landing.flac", min(params.volume+10, 100));
-        //         this_thread::sleep_for(chrono::milliseconds(1000));
-        //     }).detach();
-        // }
+        if (nb_LinesX > 0 || nb_LinesY > 0) {
+            std::thread([this] {
+                music sound("resources/sounds/line_complete.wav", min(params.volume+10, 100));
+                this_thread::sleep_for(chrono::milliseconds(1000));
+            }).detach();
+        } else {
+            std::thread([this] {
+                music sound("resources/sounds/piece_landing.flac", min(params.volume+10, 100));
+                this_thread::sleep_for(chrono::milliseconds(1000));
+            }).detach();
+        }
         while(nb_LinesX > 0 or nb_LinesY > 0) {
             if(nb_LinesX > 0 && nb_LinesY > 0) {
                 setScore(score+sqrt(getTime())*1000);
@@ -341,9 +329,8 @@ int Game::gameLoop() {
         }
 
         // Check if the game is over
-        for(int i=x; i<x+4 && i < board.getWidth(); i++) {
-            if (i >= board.getWidth() || i < 0) continue;
-            for(int j=y; j<y+4 && j < board.getDepth(); j++) {
+        for(int i=0; i < board.getWidth(); i++) {
+            for(int j=0; j< board.getDepth(); j++) {
                 if (j >= board.getDepth() || j < 0) continue;
                 if(boardMat[i][j][board.getHeight()-1] == 2) {
                     cout << "Game over" << endl;

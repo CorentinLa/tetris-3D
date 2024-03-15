@@ -4,6 +4,7 @@
 #define PIECE_SIZE 3
 #include <vector>
 #include <iostream>
+#include <cmath>
 
 using namespace std;
 

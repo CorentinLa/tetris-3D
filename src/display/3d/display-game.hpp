@@ -14,6 +14,7 @@
 #include <stdexcept>
 #include <new>
 #include "../../game_features/game.hpp"
+#include <mutex>
 
 #define KEY_ESCAPE 27
 
