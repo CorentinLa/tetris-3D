@@ -1,6 +1,9 @@
 #include"main.hpp"
 using namespace std;
 
+int RUN_GAME = 0;
+int DISPLAY_GAME = 0;
+
 // The game will have to lock when it reads the keyboard input
 
 int startGame() {
@@ -36,16 +39,18 @@ int startGame() {
 return 0;
 }
 
-
 int main(int argc, char** argv) {
     // Launch the interface
     // thread interfaceThread(&interface);
 
+    //display menu(game_state)
 
+    thread display_menu_Thread(&main_display_menu, argc, argv);
     // Launch the game
     thread gameThread(&startGame);
     thread displayThread(&main_display, argc, argv);
-    
+
+    display_menu_Thread.join();
     displayThread.join();
     gameThread.join();
 

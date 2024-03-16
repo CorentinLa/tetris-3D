@@ -13,8 +13,8 @@
 #include <SOIL/SOIL.h>
 #include <stdexcept>
 #include <new>
-#include "../../game_features/game.hpp"
 #include <mutex>
+#include "../../game_features/main.hpp"
 
 #define KEY_ESCAPE 27
 

@@ -121,30 +121,30 @@ void drawGrid() {
 	glVertex3f(-N/2-0.5, -N-0.5, -0.5-N/2);
 
 	//limites du terrain en haut
-	glVertex3f(-N/2-0.5, 2*N-0.5, -0.5-N/2);
-	glVertex3f(-N/2-0.5, 2*N-0.5, N/2-0.5);
+	glVertex3f(-N/2-0.5, N-0.5, -0.5-N/2);
+	glVertex3f(-N/2-0.5, N-0.5, N/2-0.5);
 
-	glVertex3f(-N/2-0.5, 2*N-0.5, N/2-0.5);
-	glVertex3f(N/2-0.5, 2*N-0.5, N/2-0.5);
+	glVertex3f(-N/2-0.5, N-0.5, N/2-0.5);
+	glVertex3f(N/2-0.5, N-0.5, N/2-0.5);
 
-	glVertex3f(N/2-0.5, 2*N-0.5, N/2-0.5);
-	glVertex3f(N/2-0.5, 2*N-0.5, -0.5-N/2);
+	glVertex3f(N/2-0.5, N-0.5, N/2-0.5);
+	glVertex3f(N/2-0.5, N-0.5, -0.5-N/2);
 
-	glVertex3f(N/2-0.5, 2*N-0.5, -0.5-N/2);
-	glVertex3f(-N/2-0.5, 2*N-0.5, -0.5-N/2);
+	glVertex3f(N/2-0.5, N-0.5, -0.5-N/2);
+	glVertex3f(-N/2-0.5, N-0.5, -0.5-N/2);
 
 	//limites du terrain sur les côtés
 	glVertex3f(-N/2-0.5, -N-0.5, -N/2-0.5);
-	glVertex3f(-N/2-0.5, 2*N-0.5, -N/2-0.5);
+	glVertex3f(-N/2-0.5, N-0.5, -N/2-0.5);
 
 	glVertex3f(-N/2-0.5, -N-0.5, N/2-0.5);
-	glVertex3f(-N/2-0.5, 2*N-0.5, N/2-0.5);
+	glVertex3f(-N/2-0.5, N-0.5, N/2-0.5);
 
 	glVertex3f(N/2-0.5, -N-0.5, N/2-0.5);
-	glVertex3f(N/2-0.5, 2*N-0.5, -0.5+N/2);
+	glVertex3f(N/2-0.5, N-0.5, -0.5+N/2);
 
 	glVertex3f(N/2-0.5, -N-0.5, -0.5-N/2);
-	glVertex3f(N/2-0.5, 2*N-0.5, -0.5-N/2);
+	glVertex3f(N/2-0.5, N-0.5, -0.5-N/2);
 
 	glEnd();
 }
@@ -166,82 +166,86 @@ GLuint loadTexture(const char* filename) {
 
 void display() {
 
+	if (DISPLAY_GAME) {
+		// show fps
+		glutShowWindow();
+		static int frame = 0, time, timebase = 0;
+		static char buffer[256];
 
-	// show fps
-	static int frame = 0, time, timebase = 0;
-	static char buffer[256];
+		frame++;
+		time = glutGet(GLUT_ELAPSED_TIME);
+		if (time - timebase > 1000) {
+			sprintf(buffer, "FPS:%4.2f",
+				frame*1000.0 / (time - timebase));
+				glutSetWindowTitle(buffer);
+			timebase = time;
+			frame = 0;
+		}
 
-	frame++;
-	time = glutGet(GLUT_ELAPSED_TIME);
-	if (time - timebase > 1000) {
-		sprintf(buffer, "FPS:%4.2f",
-			frame*1000.0 / (time - timebase));
-			glutSetWindowTitle(buffer);
-		timebase = time;
-		frame = 0;
-	}
+		
 
-	
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glMatrixMode(GL_MODELVIEW);
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		gluLookAt(zoom, 2, 2, 0, 0, 0, 0, 1, 0);
 
-	glLoadIdentity();
-	gluLookAt(zoom, 2, 2, 0, 0, 0, 0, 1, 0);
+		drawGrid();
 
-	drawGrid();
+		// write the score
 
-	// write the score
-
-	glColor3f(1, 1, 1);
-	glRasterPos3f(-N / 2, N / 2, -N / 2);
-	std::string score = "Score: " + std::to_string(onGoingGame->getScore());
-	for (int i = 0; i < score.length(); i++)
-	{
-		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, score[i]);
-	}
-
-    for (int j = 0; j < base_size; j++)
-	{
-		for (int k = 0; k < base_size; k++)
+		glColor3f(1, 1, 1);
+		glRasterPos3f(-N / 2, N / 2, -N / 2);
+		std::string score = "Score: " + std::to_string(onGoingGame->getScore());
+		for (int i = 0; i < score.length(); i++)
 		{
-			for (int l = 0; l < base_height; l++)
+			glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, score[i]);
+		}
+
+		for (int j = 0; j < base_size; j++)
+		{
+			for (int k = 0; k < base_size; k++)
 			{
-				if (base[j][l][k] == 2)
+				for (int l = 0; l < base_height; l++)
 				{
-					glPushMatrix();
-
-					drawCube(j-base_size/2, l-base_height/2, k-base_size/2, 1, ironID);
-
-					glPopMatrix();
-				}
-				else if (base[j][l][k] == 1)
+					if (base[j][l][k] == 2)
 					{
 						glPushMatrix();
 
-						drawCube(j-base_size/2, l-base_height/2, k-base_size/2, 1, goldID);
+						drawCube(j-base_size/2, l-base_height/2, k-base_size/2, 1, ironID);
 
 						glPopMatrix();
 					}
-				else if (base[j][l][k] == 3)
-				{
-					glPushMatrix();
+					else if (base[j][l][k] == 1)
+						{
+							glPushMatrix();
 
-					drawCube(j-base_size/2, l-base_height/2, k-base_size/2, 1, cobblestoneID);
+							drawCube(j-base_size/2, l-base_height/2, k-base_size/2, 1, goldID);
 
-					glPopMatrix();
+							glPopMatrix();
+						}
+					else if (base[j][l][k] == 3)
+					{
+						glPushMatrix();
+
+						drawCube(j-base_size/2, l-base_height/2, k-base_size/2, 1, cobblestoneID);
+
+						glPopMatrix();
+					}
 				}
 			}
 		}
+
+		
+
+		glPopMatrix();
+
+		glutSwapBuffers();
+		glFlush();
 	}
-
-	
-
-	glPopMatrix();
-
-	glutSwapBuffers();
-	glFlush();
-
+	else {
+		glutHideWindow();
+	}
 }
 
 void initGame(Game* startedGame) {
@@ -629,8 +633,7 @@ int main_display(int argc, char** argv) {
 	win.z_near = 1.0f;
 	win.z_far = 500.0f;
 
-
-    //initalize base with zeros
+	//initalize base with zeros
 	for (int i = 0; i < base_size; i++)
 	{
 		for (int j = 0; j < base_height; j++)
@@ -646,6 +649,8 @@ int main_display(int argc, char** argv) {
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);// Display Mode
 	glutInitWindowSize(win.width, win.height);// Set the window size
 	glutCreateWindow("Tetris 3D");// Create the window with given title
+	glutHideWindow();
+
 	glutDisplayFunc(display);// Set the display function
 	glutIdleFunc(display);
 	glutKeyboardFunc(keyboard);// Set the normal keyboard function

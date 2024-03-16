@@ -12,15 +12,28 @@
           <object id="grid" class="GtkGrid">
             <property name="visible">True</property>
             <child>
-              <object id="button1" class="GtkButton">
+              <object id="new-game" class="GtkButton">
                 <property name="visible">True</property>
-                <property name="label">PLAY</property>
+                <property name="label">NEW GAME</property>
                 <property name="width-request">500</property>
                 <property name="height-request">50</property>
               </object>
               <packing>
                 <property name="left-attach">0</property>
                 <property name="top-attach">0</property>
+                <property name="width">2</property>
+              </packing>
+            </child>
+            <child>
+              <object id="resume-game" class="GtkButton">
+                <property name="visible">True</property>
+                <property name="label">RESUME GAME</property>
+                <property name="width-request">500</property>
+                <property name="height-request">50</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">1</property>
                 <property name="width">2</property>
               </packing>
             </child>
@@ -33,7 +46,7 @@
               </object>
               <packing>
                 <property name="left-attach">0</property>
-                <property name="top-attach">1</property>
+                <property name="top-attach">2</property>
                 <property name="width">2</property>
               </packing>
             </child>
