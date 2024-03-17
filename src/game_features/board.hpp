@@ -112,6 +112,20 @@ class Board
                 }
             }
         }
+    void reset() {
+    // Remise à zéro de la structure boardMat
+    for(int i = 0; i < width; ++i) {
+        for(int j = 0; j < depth; ++j) {
+            for(int k = 0; k < height; ++k) {
+                if(k == 0) {
+                    boardMat[i][j][k] = 3; // Remettre le sol à l'état initial (3)
+                } else {
+                    boardMat[i][j][k] = 0; // Remettre le reste de la grille à l'état initial (0)
+                }
+            }
+        }
+    }
+}
 };
 
 #endif

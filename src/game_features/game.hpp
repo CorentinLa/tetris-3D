@@ -42,6 +42,11 @@ public:
 
     }
 
+    void StopSound() {
+        // Stop the music 
+        if (vlc_player != NULL && libvlc_media_player_is_playing(vlc_player)) libvlc_media_player_stop(vlc_player);
+    }
+
     int setVolume(int newVolume) {
         volume = newVolume;
         libvlc_audio_set_volume(vlc_player, volume);
@@ -205,6 +210,19 @@ public:
             }).detach();
         currentPiece.rotate(axe, sens);
         return 0;
+    }
+
+    void reset() {
+        score = 0;
+        time = 0;
+        difficulty = params.difficulty;
+        endedGame = 1;
+
+        readPiecesShapes();
+        changeNextPiece();
+        changeCurrentPiece();
+        changeNextPiece();
+        board.reset();
     }
 
 };

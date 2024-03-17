@@ -165,7 +165,6 @@ GLuint loadTexture(const char* filename) {
 }
 
 void display() {
-
 	if (DISPLAY_GAME) {
 		// show fps
 		glutShowWindow();
@@ -389,6 +388,14 @@ void special_keys(int keys, int x, int y) {
 void keyboard(unsigned char key, int mousePositionX, int mousePositionY) {
     int moires = 0;
 
+	if (CLOSE_GAME) {
+		onGoingGame->endedGame = 0;
+		glDeleteTextures(1, &cobblestoneID);
+		glDeleteTextures(1, &floorID);
+		glDeleteTextures(1, &goldID);
+		glDeleteTextures(1, &ironID);
+		exit(0);
+	}
 	if (leftRight_rotation < 0)
 		moires = leftRight_rotation % 360 + 360;
 	else
@@ -396,15 +403,23 @@ void keyboard(unsigned char key, int mousePositionX, int mousePositionY) {
 
 	switch (key)
 	{
-	case '&':
-		glDeleteTextures(1, &cobblestoneID);
-		glDeleteTextures(1, &floorID);
-		glDeleteTextures(1, &goldID);
-		glDeleteTextures(1, &ironID);
+	case 'p':
+		// glDeleteTextures(1, &cobblestoneID);
+		// glDeleteTextures(1, &floorID);
+		// glDeleteTextures(1, &goldID);
+		// glDeleteTextures(1, &ironID);
 		// destroy objects and free memory
-		onGoingGame->endedGame = 0;
+
+		RUN_GAME = 0;
+		DISPLAY_GAME = 0;
+		NEW_GAME = 0;
+
+		glutHideWindow();
+		main_display_menu();
+
+		// onGoingGame->endedGame = 0;
 		this_thread::sleep_for(chrono::milliseconds(200));
-		exit(0);
+		// exit(0);
 
 
 	case 'q': // Z

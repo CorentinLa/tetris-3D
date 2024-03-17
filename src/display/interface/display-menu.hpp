@@ -4,8 +4,10 @@
 #include <gtk/gtk.h>
 #include "../../game_features/main.hpp"
 
-int main_display_menu(int argc, char *argv[]);
+int main_display_menu();
 
-static void execute_tetris3d(GtkWidget *widget, gpointer data);
+static void resume_game(GtkWidget *widget, gpointer data);
+
+static void new_game(GtkWidget *widget, gpointer data);
 
 #endif
