@@ -166,6 +166,7 @@ GLuint loadTexture(const char* filename) {
 
 void display() {
 	if (DISPLAY_GAME) {
+
 		// show fps
 		glutShowWindow();
 		static int frame = 0, time, timebase = 0;
@@ -413,16 +414,19 @@ void keyboard(unsigned char key, int mousePositionX, int mousePositionY) {
 		RUN_GAME = 0;
 		DISPLAY_GAME = 0;
 		NEW_GAME = 0;
+		SHOW_MENU = 1;
+		printf("touche p enfoncée\n");
 
 		glutHideWindow();
-		main_display_menu();
+		show_menu();
 
 		// onGoingGame->endedGame = 0;
-		this_thread::sleep_for(chrono::milliseconds(200));
+		// this_thread::sleep_for(chrono::milliseconds(200));
 		// exit(0);
 
 
 	case 'q': // Z
+		printf("touche q enfoncée\n");
 		if (onGoingGame->currentPieceMovable('Y')) {
 			onGoingGame->destroyCurrentPiece();
 			onGoingGame->moveCurrentPiece('Y');

@@ -10,4 +10,8 @@ static void resume_game(GtkWidget *widget, gpointer data);
 
 static void new_game(GtkWidget *widget, gpointer data);
 
+void show_menu();
+
+void hide_menu();
+
 #endif

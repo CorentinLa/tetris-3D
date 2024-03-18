@@ -14,5 +14,6 @@ extern int RUN_GAME;
 extern int DISPLAY_GAME;
 extern int NEW_GAME;
 extern int CLOSE_GAME;
+extern int SHOW_MENU;
 
 #endif

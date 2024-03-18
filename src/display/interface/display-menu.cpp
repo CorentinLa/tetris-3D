@@ -4,6 +4,11 @@
 
 //compiler avec: gcc `pkg-config --cflags gtk+-3.0` -o display-menu.exe display-menu.cpp `pkg-config --libs gtk+-3.0`
 
+GtkBuilder *builder;
+GObject *window;
+GObject *button;
+GError *error = NULL;
+
 static void resume_game(GtkWidget *widget, gpointer data) {
     // const char *command = "./exe/main.exe";
     // GError *error = NULL;
@@ -18,10 +23,11 @@ static void resume_game(GtkWidget *widget, gpointer data) {
     NEW_GAME = 0;
     DISPLAY_GAME = 1;
     CLOSE_GAME = 0;
+    SHOW_MENU = 0;
 
     // Close the menu
     GtkWidget *window = GTK_WIDGET(data);
-    gtk_widget_destroy(window);
+    gtk_widget_hide(window);
 
 }
 
@@ -31,11 +37,11 @@ static void new_game(GtkWidget *widget, gpointer data) {
     NEW_GAME = 1;
     DISPLAY_GAME = 1;
     CLOSE_GAME = 0;
+    SHOW_MENU = 0;
 
     // Close the menu
     GtkWidget *window = GTK_WIDGET(data);
-    gtk_widget_destroy(window);
-
+    gtk_widget_hide(window);
 }
 
 static void quit_menu(GtkWidget *widget, gpointer data) {
@@ -47,11 +53,17 @@ static void quit_menu(GtkWidget *widget, gpointer data) {
     gtk_widget_destroy(window);
 }
 
+// Function to show the menu
+void show_menu() {
+    gtk_widget_show(GTK_WIDGET(window));
+}
+
+// Function to hide the menu
+void hide_menu() {
+    gtk_widget_hide(GTK_WIDGET(window));
+}
+
 int main_display_menu() {
-    GtkBuilder *builder;
-    GObject *window;
-    GObject *button;
-    GError *error = NULL;
 
     gtk_init(0, NULL);
 
