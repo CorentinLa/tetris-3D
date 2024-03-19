@@ -38,6 +38,7 @@ glutWindow win;
 
 void initGame(Game* startedGame) {
 	onGoingGameD = startedGame;
+	this_thread::sleep_for(chrono::milliseconds(50));
 	onGoingGameD->pausedGame = 0;
 }
 

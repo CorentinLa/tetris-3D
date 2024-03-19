@@ -57,6 +57,16 @@ public:
         return libvlc_media_player_is_playing(vlc_player);
     }
 
+    int pause() {
+        libvlc_media_player_pause(vlc_player);
+        return 0;
+    }
+
+    int resume() {
+        libvlc_media_player_play(vlc_player);
+        return 0;
+    }
+
     ~music() {
         libvlc_media_player_release(vlc_player);
         libvlc_media_release(vlc_media);
@@ -120,13 +130,11 @@ public:
     std::mutex mtx;
 
 
-    Game(Parameters params) : params(params), endedGame(1), board(params.width, params.depth, params.height), score(0), time(0), difficulty(params.difficulty){
+    Game(Parameters params) : params(params), endedGame(1), board(params.width, params.depth, params.height), score(0), time(0), pausedGame(1), difficulty(params.difficulty){
         readPiecesShapes();
         changeNextPiece();
         changeCurrentPiece();
         changeNextPiece();
-        endedGame = 1;
-        pausedGame = 1;
         };
     ~Game() {
         // Free the memory
@@ -152,12 +160,12 @@ public:
     Piece getCurrentPiece() const {return currentPiece;};
 
     void moveCurrentPiece(char direction) {
-        // if(direction != 'z') {
-        //     std::thread([this] {
-        //         music sound("resources/sounds/move.mp3", max(params.volume, 0));
-        //         this_thread::sleep_for(chrono::milliseconds(200));
-        //     }).detach();
-        // }
+        if(direction != 'z') {
+            std::thread([this] {
+                music sound("resources/sounds/move.mp3", max(params.volume, 0));
+                this_thread::sleep_for(chrono::milliseconds(200));
+            }).detach();
+        }
         switch(direction) {
         case 'X':
             currentPiece.setX(currentPiece.getX()+1);
