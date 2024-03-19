@@ -21,7 +21,7 @@ const int N = 10;
 int d = N;
 const int base_size = N;
 const int base_height = 2*N;
-Game* onGoingGame;
+Game* onGoingGameD;
 
 bool stop = true;
 
@@ -34,6 +34,12 @@ GLuint goldID;
 GLuint floorID;
 GLuint ironID;
 glutWindow win;
+
+
+void initGame(Game* startedGame) {
+	onGoingGameD = startedGame;
+	onGoingGameD->pausedGame = 0;
+}
 
 void update_game(int*** new_base, int base_width, int base_depth, int base_height) {
 	for (int i = 0; i < base_width; ++i) {
@@ -165,92 +171,92 @@ GLuint loadTexture(const char* filename) {
 }
 
 void display() {
-	if (DISPLAY_GAME) {
+	if (onGoingGameD->endedGame == 0) {
+		glutDestroyWindow(1);
+		return;
+	}
+	
+	else if (onGoingGameD->pausedGame) {
+		return;
+	}
+	// show fps
+	glutShowWindow();
+	static int frame = 0, time, timebase = 0;
+	static char buffer[256];
 
-		// show fps
-		glutShowWindow();
-		static int frame = 0, time, timebase = 0;
-		static char buffer[256];
+	frame++;
+	time = glutGet(GLUT_ELAPSED_TIME);
+	if (time - timebase > 1000) {
+		sprintf(buffer, "FPS:%4.2f",
+			frame*1000.0 / (time - timebase));
+			glutSetWindowTitle(buffer);
+		timebase = time;
+		frame = 0;
+	}
 
-		frame++;
-		time = glutGet(GLUT_ELAPSED_TIME);
-		if (time - timebase > 1000) {
-			sprintf(buffer, "FPS:%4.2f",
-				frame*1000.0 / (time - timebase));
-				glutSetWindowTitle(buffer);
-			timebase = time;
-			frame = 0;
-		}
+	
 
-		
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glMatrixMode(GL_MODELVIEW);
 
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	gluLookAt(zoom, 2, 2, 0, 0, 0, 0, 1, 0);
 
-		glLoadIdentity();
-		gluLookAt(zoom, 2, 2, 0, 0, 0, 0, 1, 0);
+	drawGrid();
 
-		drawGrid();
+	// write the score
 
-		// write the score
+	glColor3f(1, 1, 1);
+	glRasterPos3f(-N / 2, N / 2, -N / 2);
+	std::string score = "Score: " + std::to_string(onGoingGameD->getScore());
+	for (int i = 0; i < score.length(); i++)
+	{
+		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, score[i]);
+	}
 
-		glColor3f(1, 1, 1);
-		glRasterPos3f(-N / 2, N / 2, -N / 2);
-		std::string score = "Score: " + std::to_string(onGoingGame->getScore());
-		for (int i = 0; i < score.length(); i++)
+	for (int j = 0; j < base_size; j++)
+	{
+		for (int k = 0; k < base_size; k++)
 		{
-			glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, score[i]);
-		}
-
-		for (int j = 0; j < base_size; j++)
-		{
-			for (int k = 0; k < base_size; k++)
+			for (int l = 0; l < base_height; l++)
 			{
-				for (int l = 0; l < base_height; l++)
+				if (base[j][l][k] == 2)
 				{
-					if (base[j][l][k] == 2)
+					glPushMatrix();
+
+					drawCube(j-base_size/2, l-base_height/2, k-base_size/2, 1, ironID);
+
+					glPopMatrix();
+				}
+				else if (base[j][l][k] == 1)
 					{
 						glPushMatrix();
 
-						drawCube(j-base_size/2, l-base_height/2, k-base_size/2, 1, ironID);
+						drawCube(j-base_size/2, l-base_height/2, k-base_size/2, 1, goldID);
 
 						glPopMatrix();
 					}
-					else if (base[j][l][k] == 1)
-						{
-							glPushMatrix();
+				else if (base[j][l][k] == 3)
+				{
+					glPushMatrix();
 
-							drawCube(j-base_size/2, l-base_height/2, k-base_size/2, 1, goldID);
+					drawCube(j-base_size/2, l-base_height/2, k-base_size/2, 1, cobblestoneID);
 
-							glPopMatrix();
-						}
-					else if (base[j][l][k] == 3)
-					{
-						glPushMatrix();
-
-						drawCube(j-base_size/2, l-base_height/2, k-base_size/2, 1, cobblestoneID);
-
-						glPopMatrix();
-					}
+					glPopMatrix();
 				}
 			}
 		}
-
-		
-
-		glPopMatrix();
-
-		glutSwapBuffers();
-		glFlush();
 	}
-	else {
-		glutHideWindow();
-	}
+
+	
+
+	glPopMatrix();
+
+	glutSwapBuffers();
+	glFlush();
 }
 
-void initGame(Game* startedGame) {
-	onGoingGame = startedGame;
-}
+
 
 void normal_keys(unsigned char key, int x, int y) {
 
@@ -386,124 +392,113 @@ void special_keys(int keys, int x, int y) {
 	}
 }*/
 
+void memoryFree() {
+	glDeleteTextures(1, &cobblestoneID);
+	glDeleteTextures(1, &floorID);
+	glDeleteTextures(1, &goldID);
+	glDeleteTextures(1, &ironID);
+
+}
+
 void keyboard(unsigned char key, int mousePositionX, int mousePositionY) {
     int moires = 0;
-
-	if (CLOSE_GAME) {
-		onGoingGame->endedGame = 0;
-		glDeleteTextures(1, &cobblestoneID);
-		glDeleteTextures(1, &floorID);
-		glDeleteTextures(1, &goldID);
-		glDeleteTextures(1, &ironID);
-		exit(0);
-	}
-	if (leftRight_rotation < 0)
-		moires = leftRight_rotation % 360 + 360;
-	else
-		moires = leftRight_rotation % 360;
-
+	guint source_id = 0;
 	switch (key)
 	{
 	case 'p':
-		// glDeleteTextures(1, &cobblestoneID);
-		// glDeleteTextures(1, &floorID);
-		// glDeleteTextures(1, &goldID);
-		// glDeleteTextures(1, &ironID);
-		// destroy objects and free memory
-
-		RUN_GAME = 0;
-		DISPLAY_GAME = 0;
-		NEW_GAME = 0;
-		SHOW_MENU = 1;
-		printf("touche p enfoncée\n");
-
+		onGoingGameD->pausedGame = !onGoingGameD->pausedGame;
 		glutHideWindow();
-		show_menu();
 
-		// onGoingGame->endedGame = 0;
-		// this_thread::sleep_for(chrono::milliseconds(200));
-		// exit(0);
+		// We need to call the show_menu function in the main gtk thread to avoid a crash
+		// G_SOURCE_FUNC is a type of function that is gboolean and takes a pointer as an argument
 
+		try {
+			g_idle_add((GSourceFunc)show_menu, NULL);
+		}
+		catch (const std::exception& e) {
+			std::cerr << e.what() << std::endl;
+		}
+
+		break;
 
 	case 'q': // Z
-		printf("touche q enfoncée\n");
-		if (onGoingGame->currentPieceMovable('Y')) {
-			onGoingGame->destroyCurrentPiece();
-			onGoingGame->moveCurrentPiece('Y');
-			onGoingGame->constructCurrentPiece();
+		if (onGoingGameD->currentPieceMovable('Y')) {
+			onGoingGameD->destroyCurrentPiece();
+			onGoingGameD->moveCurrentPiece('Y');
+			onGoingGameD->constructCurrentPiece();
 		}
 		break;
 	case 'd': // S
-		if (onGoingGame->currentPieceMovable('y')) {
-			onGoingGame->destroyCurrentPiece();
-			onGoingGame->moveCurrentPiece('y');
-			onGoingGame->constructCurrentPiece();
+		if (onGoingGameD->currentPieceMovable('y')) {
+			onGoingGameD->destroyCurrentPiece();
+			onGoingGameD->moveCurrentPiece('y');
+			onGoingGameD->constructCurrentPiece();
 		}
 		break;
 	case 'z': // Q
-		if (onGoingGame->currentPieceMovable('x')) {
-			std::unique_lock<std::mutex> lock(onGoingGame->mtx);
-			onGoingGame->destroyCurrentPiece();
-			onGoingGame->moveCurrentPiece('x');
-			onGoingGame->constructCurrentPiece();
+		if (onGoingGameD->currentPieceMovable('x')) {
+			std::unique_lock<std::mutex> lock(onGoingGameD->mtx);
+			onGoingGameD->destroyCurrentPiece();
+			onGoingGameD->moveCurrentPiece('x');
+			onGoingGameD->constructCurrentPiece();
 			lock.unlock();
 		}
 		break;
 	case 's': // D
-		if (onGoingGame->currentPieceMovable('X')) {
-			onGoingGame->destroyCurrentPiece();
-			onGoingGame->moveCurrentPiece('X');
-			onGoingGame->constructCurrentPiece();
+		if (onGoingGameD->currentPieceMovable('X')) {
+			onGoingGameD->destroyCurrentPiece();
+			onGoingGameD->moveCurrentPiece('X');
+			onGoingGameD->constructCurrentPiece();
 		}
 		break;
 	case 'w': 
-		if (onGoingGame->currentPieceMovable('z')) {
-			onGoingGame->destroyCurrentPiece();
-			onGoingGame->moveCurrentPiece('z');
-			onGoingGame->constructCurrentPiece();
+		if (onGoingGameD->currentPieceMovable('z')) {
+			onGoingGameD->destroyCurrentPiece();
+			onGoingGameD->moveCurrentPiece('z');
+			onGoingGameD->constructCurrentPiece();
 		}
 		break;
 	case 'a':
-		if(onGoingGame->currentPieceRotatable('z', 'p')) {
-		onGoingGame->destroyCurrentPiece();
-		onGoingGame->rotateCurrentPiece('z', 'p');
-		onGoingGame->constructCurrentPiece();
+		if(onGoingGameD->currentPieceRotatable('z', 'p')) {
+		onGoingGameD->destroyCurrentPiece();
+		onGoingGameD->rotateCurrentPiece('z', 'p');
+		onGoingGameD->constructCurrentPiece();
 		}
 		break;
 	case 'e':
-		if(onGoingGame->currentPieceRotatable('z', 'n')) {
-		onGoingGame->destroyCurrentPiece();
-		onGoingGame->rotateCurrentPiece('z', 'n');
-		onGoingGame->constructCurrentPiece();
+		if(onGoingGameD->currentPieceRotatable('z', 'n')) {
+		onGoingGameD->destroyCurrentPiece();
+		onGoingGameD->rotateCurrentPiece('z', 'n');
+		onGoingGameD->constructCurrentPiece();
 		}
 		break;
 	case 'r':
-		if(onGoingGame->currentPieceRotatable('x', 'p')) {
-		onGoingGame->destroyCurrentPiece();
-		onGoingGame->rotateCurrentPiece('x', 'p');
-		onGoingGame->constructCurrentPiece();
+		if(onGoingGameD->currentPieceRotatable('x', 'p')) {
+		onGoingGameD->destroyCurrentPiece();
+		onGoingGameD->rotateCurrentPiece('x', 'p');
+		onGoingGameD->constructCurrentPiece();
 		}
 		break;
 	case 'f':
-		if(onGoingGame->currentPieceRotatable('x', 'n')) {
-		onGoingGame->destroyCurrentPiece();
-		onGoingGame->rotateCurrentPiece('x', 'n');
-		onGoingGame->constructCurrentPiece();
+		if(onGoingGameD->currentPieceRotatable('x', 'n')) {
+		onGoingGameD->destroyCurrentPiece();
+		onGoingGameD->rotateCurrentPiece('x', 'n');
+		onGoingGameD->constructCurrentPiece();
 		}
 		break;
 	case 'u':
-		if(onGoingGame->currentPieceRotatable('y', 'p')) {
-		onGoingGame->destroyCurrentPiece();
-		onGoingGame->rotateCurrentPiece('y', 'p');
-		onGoingGame->constructCurrentPiece();
+		if(onGoingGameD->currentPieceRotatable('y', 'p')) {
+		onGoingGameD->destroyCurrentPiece();
+		onGoingGameD->rotateCurrentPiece('y', 'p');
+		onGoingGameD->constructCurrentPiece();
 		glutPostRedisplay();
 		}
 		break;
 	case 'o':
-		if(onGoingGame->currentPieceRotatable('y', 'n')) {
-		onGoingGame->destroyCurrentPiece();
-		onGoingGame->rotateCurrentPiece('y', 'n');
-		onGoingGame->constructCurrentPiece();
+		if(onGoingGameD->currentPieceRotatable('y', 'n')) {
+		onGoingGameD->destroyCurrentPiece();
+		onGoingGameD->rotateCurrentPiece('y', 'n');
+		onGoingGameD->constructCurrentPiece();
 		glutPostRedisplay();
 		}
 		break;
@@ -587,7 +582,7 @@ void keyboard(unsigned char key, int mousePositionX, int mousePositionY) {
 	default:
 		break;
 	}
-		Board board = onGoingGame->getBoard();
+		Board board = onGoingGameD->getBoard();
         int*** boardMat = board.getBoardMat();
         int width = board.getWidth(); 
 		int depth = board.getDepth(); 

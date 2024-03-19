@@ -15,6 +15,7 @@
 #include <new>
 #include <mutex>
 #include "../../game_features/main.hpp"
+#include "../interface/display-menu.hpp"
 
 #define KEY_ESCAPE 27
 
@@ -30,6 +31,8 @@ typedef struct {
 }glutWindow;
 
 void initGame(Game* startedGame);
+
+void memoryFree();
 
 void drawCube(float x, float y, float z, float size, GLuint textureID);
 

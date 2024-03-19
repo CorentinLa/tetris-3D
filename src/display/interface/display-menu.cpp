@@ -8,60 +8,65 @@ GtkBuilder *builder;
 GObject *window;
 GObject *button;
 GError *error = NULL;
+Parameters params;
+Game* onGoingGame = NULL;
+GObject* buffer;
 
 static void resume_game(GtkWidget *widget, gpointer data) {
-    // const char *command = "./exe/main.exe";
-    // GError *error = NULL;
+    GError *error = NULL;
 
-    // // Execute the command asynchronously
-    // if (!g_spawn_command_line_async(command, &error)) {
-    //     g_printerr("Error launching command: %s\n", error->message);
-    //     g_clear_error(&error);
-    // }
-
-    RUN_GAME = 1;
-    NEW_GAME = 0;
-    DISPLAY_GAME = 1;
-    CLOSE_GAME = 0;
-    SHOW_MENU = 0;
+    onGoingGame->pausedGame = 0;
 
     // Close the menu
-    GtkWidget *window = GTK_WIDGET(data);
-    gtk_widget_hide(window);
-
+    GtkWidget *window1 = GTK_WIDGET(data);
+    gtk_widget_hide(window1);
 }
 
 static void new_game(GtkWidget *widget, gpointer data) {
 
-    RUN_GAME = 1;
-    NEW_GAME = 1;
-    DISPLAY_GAME = 1;
-    CLOSE_GAME = 0;
-    SHOW_MENU = 0;
+    // We need to check if there is already a game running to avoid starting again the display thread
+    int firstGame = onGoingGame == NULL ? 1 : 0;
 
+    // Create a new game
+    onGoingGame = new Game(params);;
+    
+    thread gameThread(&startGame, onGoingGame);
+    gameThread.detach();
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
+    char* argv[1];
+    if (firstGame) {
+    thread displayThread(&main_display, 0, argv);
+    displayThread.detach();
+    }
     // Close the menu
-    GtkWidget *window = GTK_WIDGET(data);
-    gtk_widget_hide(window);
+    GtkWidget *window1 = GTK_WIDGET(data);
+    gtk_widget_hide(window1);
+    
 }
 
 static void quit_menu(GtkWidget *widget, gpointer data) {
     // Close the menu
 
-    CLOSE_GAME = 1;
-
-    GtkWidget *window = GTK_WIDGET(data);
-    gtk_widget_destroy(window);
+    onGoingGame->pausedGame = 0;
+    onGoingGame->endedGame = 0;
+    onGoingGame->pausedGame = 1;
+    memoryFree();
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
+    delete onGoingGame;
+    // print list of existing widgets
+    GtkWidget *window1 = GTK_WIDGET(data);
+    gtk_widget_destroy(window1);
 }
 
 // Function to show the menu
-void show_menu() {
-    gtk_widget_show(GTK_WIDGET(window));
+
+gboolean show_menu(gpointer data) {
+    GtkWidget *window1 = GTK_WIDGET(window);
+    gtk_widget_show(window1);
+    return G_SOURCE_REMOVE;
 }
 
-// Function to hide the menu
-void hide_menu() {
-    gtk_widget_hide(GTK_WIDGET(window));
-}
 
 int main_display_menu() {
 
@@ -87,6 +92,8 @@ int main_display_menu() {
 
     button = gtk_builder_get_object(builder, "quit");
     g_signal_connect(button, "clicked", G_CALLBACK(quit_menu), window);
+
+    buffer = window;
 
     gtk_main();
 

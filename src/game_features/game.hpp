@@ -116,6 +116,7 @@ private:
 public:
     Parameters params;
     int endedGame;
+    int pausedGame;
     std::mutex mtx;
 
 
@@ -124,8 +125,16 @@ public:
         changeNextPiece();
         changeCurrentPiece();
         changeNextPiece();
+        endedGame = 1;
+        pausedGame = 1;
         };
-    ~Game() = default;
+    ~Game() {
+        // Free the memory
+        for (int i = 0; i < pieceShapes.size(); i++) {
+            pieceShapes[i].clear();
+        }
+        pieceShapes.clear();
+    }
 
     int readPiecesShapes();
     int gameLoop();

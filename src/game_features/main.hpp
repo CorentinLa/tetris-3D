@@ -16,4 +16,6 @@ extern int NEW_GAME;
 extern int CLOSE_GAME;
 extern int SHOW_MENU;
 
+int startGame(Game* onGoingGame);
+
 #endif
