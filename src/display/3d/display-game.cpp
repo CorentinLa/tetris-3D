@@ -20,17 +20,20 @@ int d = N;
 const int base_size = N;
 const int base_height = 2 * N;
 Game *onGoingGameD;
+const int next_piece_size = 4;
 
 bool stop = true;
 
 void *font = GLUT_BITMAP_HELVETICA_18;
 
 int base[base_size][base_height][base_size];
+int next_piece_area[next_piece_size][next_piece_size+1][next_piece_size];
 
 GLuint cobblestoneID;
 GLuint goldID;
-GLuint floorID;
 GLuint ironID;
+GLuint glassID;
+GLuint copperID;
 glutWindow win;
 
 void initGame(Game *startedGame)
@@ -52,6 +55,24 @@ void update_game(int ***new_base, int base_width, int base_depth, int base_heigh
 				base[i][j][k] = new_base[i][k][j];
 			}
 		}
+	}
+
+
+	for (int i = 0; i < next_piece_size; ++i)
+	{
+		for (int k = 0; k < next_piece_size; ++k)
+		{
+			for (int j = 0; j < next_piece_size; ++j)
+			{
+				next_piece_area[i][j+1][k] = 0;
+			}
+			next_piece_area[i][0][k] = 2;//pour le socle en verre sur lequel sera posé la prochaine pièce affichée sur le côté
+		}
+
+	}
+	vector<Coordinates> next_shape = onGoingGameD->nextPiece.getShape();
+	for (int i = 0; i < next_shape.size(); i++) {
+		next_piece_area[next_shape[i].x][next_shape[i].z+1][next_shape[i].y] = 1;
 	}
 }
 
@@ -281,14 +302,38 @@ void display()
 		}
 	}
 
+	for (int j = 0; j < next_piece_size; j++)
+	{
+		for (int k = 0; k < next_piece_size; k++)
+		{
+			for (int l = 0; l < next_piece_size+1; l++)
+			{
+				if (next_piece_area[j][l][k] == 1)
+				{
+					glPushMatrix();
+
+					drawCube(j - base_size / 4, l - base_height / 4, k - base_size / 2-4, 1, copperID);
+
+					glPopMatrix();
+				}
+				else {
+					if (next_piece_area[j][l][k] == 2)
+						{
+							glPushMatrix();
+
+							drawCube(j - base_size / 4, l - base_height / 4, k - base_size / 2-4, 1, glassID);
+
+							glPopMatrix();
+						} 
+				}
+			}
+		}
+	}
+
 	glPopMatrix();
 
 	glutSwapBuffers();
 	glFlush();
-}
-
-void normal_keys(unsigned char key, int x, int y)
-{
 }
 
 void special_keys(int keys, int x, int y)
@@ -425,9 +470,11 @@ void special_keys(int keys, int x, int y)
 void memoryFree()
 {
 	glDeleteTextures(1, &cobblestoneID);
-	glDeleteTextures(1, &floorID);
 	glDeleteTextures(1, &goldID);
 	glDeleteTextures(1, &ironID);
+	glDeleteTextures(1, &glassID);
+	glDeleteTextures(1, &copperID);
+
 }
 
 void keyboard(unsigned char key, int mousePositionX, int mousePositionY)
@@ -659,9 +706,10 @@ void keyboard(unsigned char key, int mousePositionX, int mousePositionY)
 void initialize()
 {
 	cobblestoneID = loadTexture("./resources/textures/cobblestone.png");
-	floorID = loadTexture("./resources/textures/floor.png");
 	goldID = loadTexture("./resources/textures/gold.png");
 	ironID = loadTexture("./resources/textures/iron.png");
+	glassID = loadTexture("./resources/textures/glass.png");
+	copperID = loadTexture("./resources/textures/copper.png");
 
 	// select projection matrix
 	glMatrixMode(GL_PROJECTION);
@@ -732,7 +780,7 @@ int main_display(int argc, char **argv)
 
 	glutDisplayFunc(display); // Set the display function
 	glutIdleFunc(display);
-	glutKeyboardFunc(keyboard);	   // Set the normal keyboard function
+	glutKeyboardUpFunc(keyboard);	   // Set the normal keyboard function
 	glutSpecialFunc(special_keys); // Set the special keyboard function
 								   // glutMouseFunc(mouse_button);// Set the mouse button function
 
