@@ -1,12 +1,10 @@
-#include"display-game.hpp"
-#include<thread>
+#include "display-game.hpp"
+#include <thread>
 #include "../../game_features/game.hpp"
-//sudo apt-get install libsoil-dev
-//sudo apt-get install freeglut3-dev
+// sudo apt-get install libsoil-dev
+// sudo apt-get install freeglut3-dev
 
-//g++ -c src/display/3d/display-game.cpp -o obj/display-game.o -lGL -lGLU -lglut -lSOIL
-
-
+// g++ -c src/display/3d/display-game.cpp -o obj/display-game.o -lGL -lGLU -lglut -lSOIL
 
 bool fullscreen = false;
 int texture_size = 16;
@@ -20,8 +18,8 @@ float movez = -1;
 const int N = 10;
 int d = N;
 const int base_size = N;
-const int base_height = 2*N;
-Game* onGoingGameD;
+const int base_height = 2 * N;
+Game *onGoingGameD;
 
 bool stop = true;
 
@@ -35,71 +33,102 @@ GLuint floorID;
 GLuint ironID;
 glutWindow win;
 
-
-void initGame(Game* startedGame) {
+void initGame(Game *startedGame)
+{
 	onGoingGameD = startedGame;
 	this_thread::sleep_for(chrono::milliseconds(50));
 	onGoingGameD->pausedGame = 0;
 }
 
-void update_game(int*** new_base, int base_width, int base_depth, int base_height) {
-	for (int i = 0; i < base_width; ++i) {
-		for (int j = 0; j < base_height;  ++j) {
-			for (int k = 0; k < base_depth; ++k) {
+// Function to update the dispay game board as it needs for glut to be a constant pointer
+void update_game(int ***new_base, int base_width, int base_depth, int base_height)
+{
+	for (int i = 0; i < base_width; ++i)
+	{
+		for (int j = 0; j < base_height; ++j)
+		{
+			for (int k = 0; k < base_depth; ++k)
+			{
 				base[i][j][k] = new_base[i][k][j];
-			}								
-		}					
+			}
+		}
 	}
 }
 
-void drawCube(float x, float y, float z, float size, GLuint textureID) {
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, textureID);
+void drawCube(float x, float y, float z, float size, GLuint textureID)
+{
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, textureID);
 
-    glBegin(GL_QUADS);
+	glBegin(GL_QUADS);
 
-    // Front face
-    glTexCoord2f(0, 0); glVertex3f(x - size / 2, y - size / 2, z + size / 2);
-    glTexCoord2f(1, 0); glVertex3f(x + size / 2, y - size / 2, z + size / 2);
-    glTexCoord2f(1, 1); glVertex3f(x + size / 2, y + size / 2, z + size / 2);
-    glTexCoord2f(0, 1); glVertex3f(x - size / 2, y + size / 2, z + size / 2);
+	// Front face
+	glTexCoord2f(0, 0);
+	glVertex3f(x - size / 2, y - size / 2, z + size / 2);
+	glTexCoord2f(1, 0);
+	glVertex3f(x + size / 2, y - size / 2, z + size / 2);
+	glTexCoord2f(1, 1);
+	glVertex3f(x + size / 2, y + size / 2, z + size / 2);
+	glTexCoord2f(0, 1);
+	glVertex3f(x - size / 2, y + size / 2, z + size / 2);
 
-    // Back face
-    glTexCoord2f(1, 0); glVertex3f(x - size / 2, y - size / 2, z - size / 2);
-    glTexCoord2f(0, 0); glVertex3f(x + size / 2, y - size / 2, z - size / 2);
-    glTexCoord2f(0, 1); glVertex3f(x + size / 2, y + size / 2, z - size / 2);
-    glTexCoord2f(1, 1); glVertex3f(x - size / 2, y + size / 2, z - size / 2);
+	// Back face
+	glTexCoord2f(1, 0);
+	glVertex3f(x - size / 2, y - size / 2, z - size / 2);
+	glTexCoord2f(0, 0);
+	glVertex3f(x + size / 2, y - size / 2, z - size / 2);
+	glTexCoord2f(0, 1);
+	glVertex3f(x + size / 2, y + size / 2, z - size / 2);
+	glTexCoord2f(1, 1);
+	glVertex3f(x - size / 2, y + size / 2, z - size / 2);
 
-    // Left face
-    glTexCoord2f(0, 0); glVertex3f(x - size / 2, y - size / 2, z + size / 2);
-    glTexCoord2f(1, 0); glVertex3f(x - size / 2, y - size / 2, z - size / 2);
-    glTexCoord2f(1, 1); glVertex3f(x - size / 2, y + size / 2, z - size / 2);
-    glTexCoord2f(0, 1); glVertex3f(x - size / 2, y + size / 2, z + size / 2);
+	// Left face
+	glTexCoord2f(0, 0);
+	glVertex3f(x - size / 2, y - size / 2, z + size / 2);
+	glTexCoord2f(1, 0);
+	glVertex3f(x - size / 2, y - size / 2, z - size / 2);
+	glTexCoord2f(1, 1);
+	glVertex3f(x - size / 2, y + size / 2, z - size / 2);
+	glTexCoord2f(0, 1);
+	glVertex3f(x - size / 2, y + size / 2, z + size / 2);
 
-    // Right face
-    glTexCoord2f(1, 0); glVertex3f(x + size / 2, y - size / 2, z + size / 2);
-    glTexCoord2f(0, 0); glVertex3f(x + size / 2, y - size / 2, z - size / 2);
-    glTexCoord2f(0, 1); glVertex3f(x + size / 2, y + size / 2, z - size / 2);
-    glTexCoord2f(1, 1); glVertex3f(x + size / 2, y + size / 2, z + size / 2);
+	// Right face
+	glTexCoord2f(1, 0);
+	glVertex3f(x + size / 2, y - size / 2, z + size / 2);
+	glTexCoord2f(0, 0);
+	glVertex3f(x + size / 2, y - size / 2, z - size / 2);
+	glTexCoord2f(0, 1);
+	glVertex3f(x + size / 2, y + size / 2, z - size / 2);
+	glTexCoord2f(1, 1);
+	glVertex3f(x + size / 2, y + size / 2, z + size / 2);
 
-    // Top face
-    glTexCoord2f(0, 1); glVertex3f(x - size / 2, y + size / 2, z + size / 2);
-    glTexCoord2f(1, 1); glVertex3f(x + size / 2, y + size / 2, z + size / 2);
-    glTexCoord2f(1, 0); glVertex3f(x + size / 2, y + size / 2, z - size / 2);
-    glTexCoord2f(0, 0); glVertex3f(x - size / 2, y + size / 2, z - size / 2);
+	// Top face
+	glTexCoord2f(0, 1);
+	glVertex3f(x - size / 2, y + size / 2, z + size / 2);
+	glTexCoord2f(1, 1);
+	glVertex3f(x + size / 2, y + size / 2, z + size / 2);
+	glTexCoord2f(1, 0);
+	glVertex3f(x + size / 2, y + size / 2, z - size / 2);
+	glTexCoord2f(0, 0);
+	glVertex3f(x - size / 2, y + size / 2, z - size / 2);
 
-    // Bottom face
-    glTexCoord2f(0, 1); glVertex3f(x - size / 2, y - size / 2, z + size / 2);
-    glTexCoord2f(1, 1); glVertex3f(x + size / 2, y - size / 2, z + size / 2);
-    glTexCoord2f(1, 0); glVertex3f(x + size / 2, y - size / 2, z - size / 2);
-    glTexCoord2f(0, 0); glVertex3f(x - size / 2, y - size / 2, z - size / 2);
+	// Bottom face
+	glTexCoord2f(0, 1);
+	glVertex3f(x - size / 2, y - size / 2, z + size / 2);
+	glTexCoord2f(1, 1);
+	glVertex3f(x + size / 2, y - size / 2, z + size / 2);
+	glTexCoord2f(1, 0);
+	glVertex3f(x + size / 2, y - size / 2, z - size / 2);
+	glTexCoord2f(0, 0);
+	glVertex3f(x - size / 2, y - size / 2, z - size / 2);
 
-    glEnd();
+	glEnd();
 
-    glDisable(GL_TEXTURE_2D);
+	glDisable(GL_TEXTURE_2D);
 }
 
-void drawGrid() {
+void drawGrid()
+{
 
 	float i;
 
@@ -114,70 +143,74 @@ void drawGrid() {
 	glColor3f(0.7, 0.6, 0.9);
 	glBegin(GL_LINES);
 
-	//limites du terrain en bas
-	glVertex3f(-N/2-0.5, -N-0.5, -0.5-N/2);
-	glVertex3f(-N/2-0.5, -N-0.5, N/2-0.5);
+	// limites du terrain en bas
+	glVertex3f(-N / 2 - 0.5, -N - 0.5, -0.5 - N / 2);
+	glVertex3f(-N / 2 - 0.5, -N - 0.5, N / 2 - 0.5);
 
-	glVertex3f(-N/2-0.5, -N-0.5, N/2-0.5);
-	glVertex3f(N/2-0.5, -N-0.5, N/2-0.5);
+	glVertex3f(-N / 2 - 0.5, -N - 0.5, N / 2 - 0.5);
+	glVertex3f(N / 2 - 0.5, -N - 0.5, N / 2 - 0.5);
 
-	glVertex3f(N/2-0.5, -N-0.5, N/2-0.5);
-	glVertex3f(N/2-0.5, -N-0.5, -0.5-N/2);
+	glVertex3f(N / 2 - 0.5, -N - 0.5, N / 2 - 0.5);
+	glVertex3f(N / 2 - 0.5, -N - 0.5, -0.5 - N / 2);
 
-	glVertex3f(N/2-0.5, -N-0.5, -0.5-N/2);
-	glVertex3f(-N/2-0.5, -N-0.5, -0.5-N/2);
+	glVertex3f(N / 2 - 0.5, -N - 0.5, -0.5 - N / 2);
+	glVertex3f(-N / 2 - 0.5, -N - 0.5, -0.5 - N / 2);
 
-	//limites du terrain en haut
-	glVertex3f(-N/2-0.5, N-0.5, -0.5-N/2);
-	glVertex3f(-N/2-0.5, N-0.5, N/2-0.5);
+	// limites du terrain en haut
+	glVertex3f(-N / 2 - 0.5, N - 0.5, -0.5 - N / 2);
+	glVertex3f(-N / 2 - 0.5, N - 0.5, N / 2 - 0.5);
 
-	glVertex3f(-N/2-0.5, N-0.5, N/2-0.5);
-	glVertex3f(N/2-0.5, N-0.5, N/2-0.5);
+	glVertex3f(-N / 2 - 0.5, N - 0.5, N / 2 - 0.5);
+	glVertex3f(N / 2 - 0.5, N - 0.5, N / 2 - 0.5);
 
-	glVertex3f(N/2-0.5, N-0.5, N/2-0.5);
-	glVertex3f(N/2-0.5, N-0.5, -0.5-N/2);
+	glVertex3f(N / 2 - 0.5, N - 0.5, N / 2 - 0.5);
+	glVertex3f(N / 2 - 0.5, N - 0.5, -0.5 - N / 2);
 
-	glVertex3f(N/2-0.5, N-0.5, -0.5-N/2);
-	glVertex3f(-N/2-0.5, N-0.5, -0.5-N/2);
+	glVertex3f(N / 2 - 0.5, N - 0.5, -0.5 - N / 2);
+	glVertex3f(-N / 2 - 0.5, N - 0.5, -0.5 - N / 2);
 
-	//limites du terrain sur les côtés
-	glVertex3f(-N/2-0.5, -N-0.5, -N/2-0.5);
-	glVertex3f(-N/2-0.5, N-0.5, -N/2-0.5);
+	// limites du terrain sur les côtés
+	glVertex3f(-N / 2 - 0.5, -N - 0.5, -N / 2 - 0.5);
+	glVertex3f(-N / 2 - 0.5, N - 0.5, -N / 2 - 0.5);
 
-	glVertex3f(-N/2-0.5, -N-0.5, N/2-0.5);
-	glVertex3f(-N/2-0.5, N-0.5, N/2-0.5);
+	glVertex3f(-N / 2 - 0.5, -N - 0.5, N / 2 - 0.5);
+	glVertex3f(-N / 2 - 0.5, N - 0.5, N / 2 - 0.5);
 
-	glVertex3f(N/2-0.5, -N-0.5, N/2-0.5);
-	glVertex3f(N/2-0.5, N-0.5, -0.5+N/2);
+	glVertex3f(N / 2 - 0.5, -N - 0.5, N / 2 - 0.5);
+	glVertex3f(N / 2 - 0.5, N - 0.5, -0.5 + N / 2);
 
-	glVertex3f(N/2-0.5, -N-0.5, -0.5-N/2);
-	glVertex3f(N/2-0.5, N-0.5, -0.5-N/2);
+	glVertex3f(N / 2 - 0.5, -N - 0.5, -0.5 - N / 2);
+	glVertex3f(N / 2 - 0.5, N - 0.5, -0.5 - N / 2);
 
 	glEnd();
 }
 
-GLuint loadTexture(const char* filename) {
-    GLuint textureID = SOIL_load_OGL_texture(
-        filename,
-        SOIL_LOAD_AUTO,
-        SOIL_CREATE_NEW_ID,
-        SOIL_FLAG_INVERT_Y
-    );
+GLuint loadTexture(const char *filename)
+{
+	GLuint textureID = SOIL_load_OGL_texture(
+		filename,
+		SOIL_LOAD_AUTO,
+		SOIL_CREATE_NEW_ID,
+		SOIL_FLAG_INVERT_Y);
 
-    if (textureID == 0) {
-        throw std::runtime_error("Texture loading failed: " + std::string(SOIL_last_result()));
-    }
+	if (textureID == 0)
+	{
+		throw std::runtime_error("Texture loading failed: " + std::string(SOIL_last_result()));
+	}
 
-    return textureID;
+	return textureID;
 }
 
-void display() {
-	if (onGoingGameD->endedGame == 0) {
+void display()
+{
+	if (onGoingGameD->endedGame == 0)
+	{
 		glutDestroyWindow(1);
 		return;
 	}
-	
-	else if (onGoingGameD->pausedGame) {
+
+	else if (onGoingGameD->pausedGame)
+	{
 		return;
 	}
 	// show fps
@@ -187,15 +220,14 @@ void display() {
 
 	frame++;
 	time = glutGet(GLUT_ELAPSED_TIME);
-	if (time - timebase > 1000) {
+	if (time - timebase > 1000)
+	{
 		sprintf(buffer, "FPS:%4.2f",
-			frame*1000.0 / (time - timebase));
-			glutSetWindowTitle(buffer);
+				frame * 1000.0 / (time - timebase));
+		glutSetWindowTitle(buffer);
 		timebase = time;
 		frame = 0;
 	}
-
-	
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
@@ -208,7 +240,7 @@ void display() {
 	// write the score
 
 	glColor3f(1, 1, 1);
-	glRasterPos3f(-N / 2, N / 2, -N / 2);
+	glRasterPos3f(-N / 2, 1.5*N, -N / 2);
 	std::string score = "Score: " + std::to_string(onGoingGameD->getScore());
 	for (int i = 0; i < score.length(); i++)
 	{
@@ -225,23 +257,23 @@ void display() {
 				{
 					glPushMatrix();
 
-					drawCube(j-base_size/2, l-base_height/2, k-base_size/2, 1, ironID);
+					drawCube(j - base_size / 2, l - base_height / 2, k - base_size / 2, 1, ironID);
 
 					glPopMatrix();
 				}
 				else if (base[j][l][k] == 1)
-					{
-						glPushMatrix();
+				{
+					glPushMatrix();
 
-						drawCube(j-base_size/2, l-base_height/2, k-base_size/2, 1, goldID);
+					drawCube(j - base_size / 2, l - base_height / 2, k - base_size / 2, 1, goldID);
 
-						glPopMatrix();
-					}
+					glPopMatrix();
+				}
 				else if (base[j][l][k] == 3)
 				{
 					glPushMatrix();
 
-					drawCube(j-base_size/2, l-base_height/2, k-base_size/2, 1, cobblestoneID);
+					drawCube(j - base_size / 2, l - base_height / 2, k - base_size / 2, 1, cobblestoneID);
 
 					glPopMatrix();
 				}
@@ -249,21 +281,18 @@ void display() {
 		}
 	}
 
-	
-
 	glPopMatrix();
 
 	glutSwapBuffers();
 	glFlush();
 }
 
-
-
-void normal_keys(unsigned char key, int x, int y) {
-
+void normal_keys(unsigned char key, int x, int y)
+{
 }
 
-void special_keys(int keys, int x, int y) {
+void special_keys(int keys, int x, int y)
+{
 	int moires = 0;
 
 	if (leftRight_rotation < 0)
@@ -274,15 +303,19 @@ void special_keys(int keys, int x, int y) {
 	int undox = movex;
 	int undoz = movez;
 
-	switch (keys) {
-	case GLUT_KEY_F1:// F1 toggles fullscreen mode
+	switch (keys)
+	{
+	case GLUT_KEY_F1: // F1 toggles fullscreen mode
 		fullscreen = !fullscreen;
-		if (fullscreen) glutFullScreen();
-		else glutReshapeWindow(500, 500);
+		if (fullscreen)
+			glutFullScreen();
+		else
+			glutReshapeWindow(500, 500);
 		break;
 
 	case GLUT_KEY_LEFT:
-		if (!stop) {
+		if (!stop)
+		{
 			if (moires <= 45 || moires > 315)
 			{
 				if (movez < d / 2)
@@ -308,7 +341,8 @@ void special_keys(int keys, int x, int y) {
 		break;
 
 	case GLUT_KEY_RIGHT:
-		if (!stop) {
+		if (!stop)
+		{
 			if (moires <= 45 || moires > 315)
 			{
 				if (movez > -d / 2 - 2)
@@ -333,7 +367,8 @@ void special_keys(int keys, int x, int y) {
 		break;
 
 	case GLUT_KEY_UP:
-		if (!stop) {
+		if (!stop)
+		{
 			if (moires <= 45 || moires > 315)
 			{
 				if (movex > -d / 2 - 2)
@@ -358,7 +393,8 @@ void special_keys(int keys, int x, int y) {
 		break;
 
 	case GLUT_KEY_DOWN:
-		if (!stop) {
+		if (!stop)
+		{
 			if (moires <= 45 || moires > 315)
 			{
 				if (movex < d / 2)
@@ -386,23 +422,17 @@ void special_keys(int keys, int x, int y) {
 	}
 }
 
-/*void mouse_button(int button, int state, int x, int y) {
-	if (button==GLUT_LEFT_BUTTON && state==GLUT_DOWN) {
-		drawshape = (drawshape+1)%3;
-		display();
-	}
-}*/
-
-void memoryFree() {
+void memoryFree()
+{
 	glDeleteTextures(1, &cobblestoneID);
 	glDeleteTextures(1, &floorID);
 	glDeleteTextures(1, &goldID);
 	glDeleteTextures(1, &ironID);
-
 }
 
-void keyboard(unsigned char key, int mousePositionX, int mousePositionY) {
-    int moires = 0;
+void keyboard(unsigned char key, int mousePositionX, int mousePositionY)
+{
+	int moires = 0;
 	guint source_id = 0;
 	switch (key)
 	{
@@ -413,94 +443,127 @@ void keyboard(unsigned char key, int mousePositionX, int mousePositionY) {
 		// We need to call the show_menu function in the main gtk thread to avoid a crash
 		// G_SOURCE_FUNC is a type of function that is gboolean and takes a pointer as an argument
 
-		try {
+		try
+		{
 			g_idle_add((GSourceFunc)show_menu, NULL);
 		}
-		catch (const std::exception& e) {
+		catch (const std::exception &e)
+		{
 			std::cerr << e.what() << std::endl;
 		}
 
 		break;
 
 	case 'q': // Z
-		if (onGoingGameD->currentPieceMovable('Y')) {
+		if (onGoingGameD->currentPieceMovable('Y'))
+		{
+			onGoingGameD->mtx.lock();
 			onGoingGameD->destroyCurrentPiece();
 			onGoingGameD->moveCurrentPiece('Y');
 			onGoingGameD->constructCurrentPiece();
+			onGoingGameD->mtx.unlock();
 		}
 		break;
 	case 'd': // S
-		if (onGoingGameD->currentPieceMovable('y')) {
+		if (onGoingGameD->currentPieceMovable('y'))
+		{
+			onGoingGameD->mtx.lock();
 			onGoingGameD->destroyCurrentPiece();
 			onGoingGameD->moveCurrentPiece('y');
 			onGoingGameD->constructCurrentPiece();
+			onGoingGameD->mtx.unlock();
 		}
 		break;
 	case 'z': // Q
-		if (onGoingGameD->currentPieceMovable('x')) {
-			std::unique_lock<std::mutex> lock(onGoingGameD->mtx);
+		if (onGoingGameD->currentPieceMovable('x'))
+		{
+			onGoingGameD->mtx.lock();
 			onGoingGameD->destroyCurrentPiece();
 			onGoingGameD->moveCurrentPiece('x');
 			onGoingGameD->constructCurrentPiece();
-			lock.unlock();
+			onGoingGameD->mtx.unlock();
 		}
 		break;
 	case 's': // D
-		if (onGoingGameD->currentPieceMovable('X')) {
+		if (onGoingGameD->currentPieceMovable('X'))
+		{
+			onGoingGameD->mtx.lock();
 			onGoingGameD->destroyCurrentPiece();
 			onGoingGameD->moveCurrentPiece('X');
 			onGoingGameD->constructCurrentPiece();
+			onGoingGameD->mtx.unlock();
 		}
 		break;
-	case 'w': 
-		if (onGoingGameD->currentPieceMovable('z')) {
+	case 'w':
+		if (onGoingGameD->currentPieceMovable('z'))
+		{
+			onGoingGameD->mtx.lock();
 			onGoingGameD->destroyCurrentPiece();
 			onGoingGameD->moveCurrentPiece('z');
 			onGoingGameD->constructCurrentPiece();
+			onGoingGameD->mtx.unlock();
 		}
 		break;
 	case 'a':
-		if(onGoingGameD->currentPieceRotatable('z', 'p')) {
-		onGoingGameD->destroyCurrentPiece();
-		onGoingGameD->rotateCurrentPiece('z', 'p');
-		onGoingGameD->constructCurrentPiece();
+		if (onGoingGameD->currentPieceRotatable('z', 'p'))
+		{
+			onGoingGameD->mtx.lock();
+			onGoingGameD->destroyCurrentPiece();
+			onGoingGameD->rotateCurrentPiece('z', 'p');
+			onGoingGameD->constructCurrentPiece();
+			onGoingGameD->mtx.unlock();
 		}
 		break;
 	case 'e':
-		if(onGoingGameD->currentPieceRotatable('z', 'n')) {
-		onGoingGameD->destroyCurrentPiece();
-		onGoingGameD->rotateCurrentPiece('z', 'n');
-		onGoingGameD->constructCurrentPiece();
+		if (onGoingGameD->currentPieceRotatable('z', 'n'))
+		{
+			onGoingGameD->mtx.lock();
+			onGoingGameD->destroyCurrentPiece();
+			onGoingGameD->rotateCurrentPiece('z', 'n');
+			onGoingGameD->constructCurrentPiece();
+			onGoingGameD->mtx.unlock();
 		}
 		break;
 	case 'r':
-		if(onGoingGameD->currentPieceRotatable('x', 'p')) {
-		onGoingGameD->destroyCurrentPiece();
-		onGoingGameD->rotateCurrentPiece('x', 'p');
-		onGoingGameD->constructCurrentPiece();
+		if (onGoingGameD->currentPieceRotatable('x', 'p'))
+		{
+			onGoingGameD->mtx.lock();
+			onGoingGameD->destroyCurrentPiece();
+			onGoingGameD->rotateCurrentPiece('x', 'p');
+			onGoingGameD->constructCurrentPiece();
+			onGoingGameD->mtx.unlock();
 		}
 		break;
 	case 'f':
-		if(onGoingGameD->currentPieceRotatable('x', 'n')) {
-		onGoingGameD->destroyCurrentPiece();
-		onGoingGameD->rotateCurrentPiece('x', 'n');
-		onGoingGameD->constructCurrentPiece();
+		if (onGoingGameD->currentPieceRotatable('x', 'n'))
+		{
+			onGoingGameD->mtx.lock();
+			onGoingGameD->destroyCurrentPiece();
+			onGoingGameD->rotateCurrentPiece('x', 'n');
+			onGoingGameD->constructCurrentPiece();
+			onGoingGameD->mtx.unlock();
 		}
 		break;
 	case 'u':
-		if(onGoingGameD->currentPieceRotatable('y', 'p')) {
-		onGoingGameD->destroyCurrentPiece();
-		onGoingGameD->rotateCurrentPiece('y', 'p');
-		onGoingGameD->constructCurrentPiece();
-		glutPostRedisplay();
+		if (onGoingGameD->currentPieceRotatable('y', 'p'))
+		{
+			onGoingGameD->mtx.lock();
+			onGoingGameD->destroyCurrentPiece();
+			onGoingGameD->rotateCurrentPiece('y', 'p');
+			onGoingGameD->constructCurrentPiece();
+			onGoingGameD->mtx.unlock();
+			glutPostRedisplay();
 		}
 		break;
 	case 'o':
-		if(onGoingGameD->currentPieceRotatable('y', 'n')) {
-		onGoingGameD->destroyCurrentPiece();
-		onGoingGameD->rotateCurrentPiece('y', 'n');
-		onGoingGameD->constructCurrentPiece();
-		glutPostRedisplay();
+		if (onGoingGameD->currentPieceRotatable('y', 'n'))
+		{
+			onGoingGameD->mtx.lock();
+			onGoingGameD->destroyCurrentPiece();
+			onGoingGameD->rotateCurrentPiece('y', 'n');
+			onGoingGameD->constructCurrentPiece();
+			onGoingGameD->mtx.unlock();
+			glutPostRedisplay();
 		}
 		break;
 	case 'i':
@@ -561,20 +624,20 @@ void keyboard(unsigned char key, int mousePositionX, int mousePositionY) {
 		leftRight_rotation -= r_speed;
 		break;
 
-	// case 'x':
-	// 	if (!stop)
-	// 		shp.rotateShape_x();
-	// 	break;
+		// case 'x':
+		// 	if (!stop)
+		// 		shp.rotateShape_x();
+		// 	break;
 
-	// case 'c':
-	// 	if (!stop)
-	// 		shp.rotateShape_y();
-	// 	break;
+		// case 'c':
+		// 	if (!stop)
+		// 		shp.rotateShape_y();
+		// 	break;
 
-	// case 'v':
-	// 	if (!stop)
-	// 		shp.rotateShape_z();
-	// 	break;
+		// case 'v':
+		// 	if (!stop)
+		// 		shp.rotateShape_z();
+		// 	break;
 
 	case KEY_ESCAPE:
 		exit(0);
@@ -583,13 +646,13 @@ void keyboard(unsigned char key, int mousePositionX, int mousePositionY) {
 	default:
 		break;
 	}
-		Board board = onGoingGameD->getBoard();
-        int*** boardMat = board.getBoardMat();
-        int width = board.getWidth(); 
-		int depth = board.getDepth(); 
-        int height = board.getHeight(); 
+	Board board = onGoingGameD->getBoard();
+	int ***boardMat = board.getBoardMat();
+	int width = board.getWidth();
+	int depth = board.getDepth();
+	int height = board.getHeight();
 
-        update_game(boardMat, width, depth, height); 
+	update_game(boardMat, width, depth, height);
 	glutPostRedisplay();
 }
 
@@ -628,27 +691,28 @@ void initialize()
 
 	// specify implementation-specific hints
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-	
-	GLfloat material_ambient[] = { 0.7, 0.7, 0.7, 1.0 };  // Ambient material color (RGBA)
-	GLfloat material_diffuse[] = { 0.9, 0.9, 0.9, 1.0 };  // Diffuse material color (RGBA)
-	GLfloat material_specular[] = { 1.0, 1.0, 1.0, 1.0 }; // Specular material color (RGBA)
-	GLfloat shininess = 10.0;  // Shininess parameter
+
+	GLfloat material_ambient[] = {0.7, 0.7, 0.7, 1.0};	// Ambient material color (RGBA)
+	GLfloat material_diffuse[] = {0.9, 0.9, 0.9, 1.0};	// Diffuse material color (RGBA)
+	GLfloat material_specular[] = {1.0, 1.0, 1.0, 1.0}; // Specular material color (RGBA)
+	GLfloat shininess = 10.0;							// Shininess parameter
 	glMaterialfv(GL_FRONT, GL_AMBIENT, material_ambient);
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, material_diffuse);
 	glMaterialfv(GL_FRONT, GL_SPECULAR, material_specular);
 	glMaterialf(GL_FRONT, GL_SHININESS, shininess);
 }
 
-int main_display(int argc, char** argv) {
+int main_display(int argc, char **argv)
+{
 
-	//set window values
+	// set window values
 	win.width = 600;
 	win.height = 800;
 	win.field_of_view_angle = 45;
 	win.z_near = 1.0f;
 	win.z_far = 500.0f;
 
-	//initalize base with zeros
+	// initalize base with zeros
 	for (int i = 0; i < base_size; i++)
 	{
 		for (int j = 0; j < base_height; j++)
@@ -660,24 +724,21 @@ int main_display(int argc, char** argv) {
 		}
 	}
 
-	glutInit(&argc, argv);// Initialize glut
-	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);// Display Mode
-	glutInitWindowSize(win.width, win.height);// Set the window size
-	glutCreateWindow("Tetris 3D");// Create the window with given title
+	glutInit(&argc, argv);									  // Initialize glut
+	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH); // Display Mode
+	glutInitWindowSize(win.width, win.height);				  // Set the window size
+	glutCreateWindow("Tetris 3D");							  // Create the window with given title
 	glutHideWindow();
 
-	glutDisplayFunc(display);// Set the display function
+	glutDisplayFunc(display); // Set the display function
 	glutIdleFunc(display);
-	glutKeyboardFunc(keyboard);// Set the normal keyboard function
-	glutSpecialFunc(special_keys);// Set the special keyboard function
-    //glutMouseFunc(mouse_button);// Set the mouse button function
-	
-	initialize();
-    
-    glutMainLoop();// Initialize main loop
+	glutKeyboardFunc(keyboard);	   // Set the normal keyboard function
+	glutSpecialFunc(special_keys); // Set the special keyboard function
+								   // glutMouseFunc(mouse_button);// Set the mouse button function
 
-	
-	
-	
+	initialize();
+
+	glutMainLoop(); // Initialize main loop
+
 	return 0;
 }
