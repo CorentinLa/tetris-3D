@@ -18,6 +18,7 @@ int startGame(Game *onGoingGame)
             }
             gameMusic.setVolume(onGoingGame->params.volume);
             gameMusic.resume();
+            this_thread::sleep_for(chrono::milliseconds(100));
         }
 
         if (onGoingGame->getTime() > 10 && !gameMusic.isPlaying() && (onGoingGame->getTime() < 300 || onGoingGame->getTime() >= 305))
