@@ -146,9 +146,10 @@ private:
     float time;
     vector<vector<Coordinates>> pieceShapes;
     Piece currentPiece;
-    Piece nextPiece;
 
 public:
+    Piece nextPiece;
+
     Parameters params;
     int endedGame;
     int pausedGame;
