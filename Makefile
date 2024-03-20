@@ -5,7 +5,7 @@ LIBS=`pkg-config --libs gtk+-3.0` -lGL -lGLU -lglut -lSOIL -lvlc -fopenmp
 all: main
 	
 main: obj/display-game.o obj/board.o obj/game.o obj/piece.o obj/display-menu.o src/game_features/main.cpp
-	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
+	$(CC) -o exe/tetris3d.exe $^ $(CFLAGS) $(LIBS)
 
 obj/display-game.o: src/display/3d/display-game.cpp
 	$(CC) -o $@ -c $< $(CFLAGS) $(LIBS)
@@ -23,4 +23,4 @@ obj/display-menu.o: src/display/interface/display-menu.cpp
 	$(CC) -o $@ -c $< $(CFLAGS) $(LIBS)
 
 clean:
-	rm -f obj/*.o exe/main.exe
+	rm -f obj/*.o exe/tetris3d.exe
