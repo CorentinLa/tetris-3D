@@ -146,6 +146,7 @@ int Game::currentPieceRotatable(char axe, char sens) const
     // Return 1 if the rotation is possible, 0 if not
 
     // Check if the rotation is possible
+    // Please check the piece.cpp file to understand the rotation
     vector<Coordinates> shape = currentPiece.getShape();
     int x_piece = currentPiece.getX();
     int y_piece = currentPiece.getY();

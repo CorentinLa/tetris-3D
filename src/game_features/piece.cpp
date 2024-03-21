@@ -1,29 +1,13 @@
 #include "piece.hpp"
 
-void Piece::setRotation(char axe, int angle) // angle in degrees
-{
-    if (angle % 90 != 0)
-    {
-        std::cout << "Error: angle must be a multiple of 90 degrees" << std::endl;
-        return;
-    }
-    switch (axe)
-    {
-    case 'x':
-        rotation_x = angle;
-        break;
-    case 'y':
-        rotation_y = angle;
-        break;
-    case 'z':
-        rotation_z = angle;
-        break;
-    default:
-        std::cout << "Error: axe must be x, y or z" << std::endl;
-        break;
-    }
-}
-
+/**
+ * Rotates the piece around a specified axis.
+ * The idea is to rotate the piece around the center of the piece.
+ * To do so, we substract the center coordinates from the coordinates of each cube of the piece and then apply the matrix of rotation.
+ *
+ * @param axe The axis of rotation ('x', 'y', or 'z').
+ * @param sens The direction of rotation ('p' for positive or 'n' for negative).
+ */
 void Piece::rotate(char axe, char sens)
 {
     float centre_x = 0;

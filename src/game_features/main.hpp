@@ -10,12 +10,12 @@
 #include "../display/3d/display-game.hpp"
 #include "../display/interface/display-menu.hpp"
 
-extern int RUN_GAME;
-extern int DISPLAY_GAME;
-extern int NEW_GAME;
-extern int CLOSE_GAME;
-extern int SHOW_MENU;
-
+/**
+ * @brief Starts the game loop and manages game features.
+ * 
+ * @param onGoingGame Pointer to the Game object representing the ongoing game.
+ * @return int Returns 0 when the game loop is finished.
+ */
 int startGame(Game* onGoingGame);
 
 #endif

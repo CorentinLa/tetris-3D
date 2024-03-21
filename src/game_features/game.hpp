@@ -15,6 +15,10 @@
 
 int playMusic(char const *location, int volume);
 
+/**
+ * @class music
+ * @brief Represents a music player for playing audio files.
+ */
 class music
 {
 private:
@@ -42,7 +46,7 @@ public:
         vlc_media = libvlc_media_new_path(inst, location);
         vlc_player = libvlc_media_player_new_from_media(vlc_media);
         libvlc_audio_set_volume(vlc_player, volume);
-        libvlc_media_player_play(vlc_player); // this line will play the video and audio
+        libvlc_media_player_play(vlc_player); // this line will play the audio
     }
 
     void StopSound()
@@ -138,6 +142,14 @@ public:
     }
 };
 
+/**
+ * @class Game
+ * @brief Represents the game logic and state.
+ * 
+ * The Game class manages the game board, pieces, score, and time. It provides
+ * methods to control the movement and rotation of the current piece, as well as
+ * methods to construct and destroy the current piece on the game board.
+ */
 class Game
 {
 private:
